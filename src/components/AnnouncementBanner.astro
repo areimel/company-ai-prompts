@@ -1,0 +1,89 @@
+---
+// Import announcements data
+import announcements from "@data/announcements.json";
+
+// Component props - We'll still allow individual props to override the data from JSON
+export interface Props {
+  text?: string;
+  link?: string;
+  active?: boolean;
+  startDate?: string;
+  endDate?: string;
+  useJson?: boolean;
+}
+
+// Get the active announcement from JSON if useJson is true
+const { 
+  text: propText, 
+  link: propLink, 
+  active: propActive, 
+  startDate: propStartDate, 
+  endDate: propEndDate,
+  useJson = true
+} = Astro.props;
+
+// Find the active announcement from JSON
+let activeAnnouncement = null;
+if (useJson) {
+  activeAnnouncement = announcements.announcements.find(announcement => {
+    if (!announcement.active) return false;
+    
+    const now = new Date();
+    const startDate = announcement.startDate ? new Date(announcement.startDate) : null;
+    const endDate = announcement.endDate ? new Date(announcement.endDate) : null;
+    
+    if (startDate && now < startDate) return false;
+    if (endDate && now > endDate) return false;
+    
+    return true;
+  });
+}
+
+// Use props if provided, otherwise use data from JSON
+const text = propText || (activeAnnouncement?.text || "");
+const link = propLink || (activeAnnouncement?.link || "");
+const active = typeof propActive !== 'undefined' ? propActive : (activeAnnouncement?.active || false);
+const startDate = propStartDate || (activeAnnouncement?.startDate || "");
+const endDate = propEndDate || (activeAnnouncement?.endDate || "");
+
+// Check if the announcement should be displayed based on date
+let shouldDisplay = active;
+
+if (shouldDisplay && startDate) {
+  const start = new Date(startDate);
+  shouldDisplay = shouldDisplay && (new Date() >= start);
+}
+
+if (shouldDisplay && endDate) {
+  const end = new Date(endDate);
+  shouldDisplay = shouldDisplay && (new Date() <= end);
+}
+---
+
+{shouldDisplay && (
+  <>
+    {link ? (
+      <a 
+        href={link} 
+        class="block w-full bg-blue-500 dark:bg-blue-700 text-white py-2 px-4 transition-colors duration-300 hover:bg-blue-600 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+      >
+        <div class="max-w-screen-lg mx-auto flex items-center justify-center text-center">
+          <div class="text-sm" set:html={text} />
+        </div>
+      </a>
+    ) : (
+      <div class="w-full bg-blue-500 dark:bg-blue-700 text-white py-2 px-4 transition-colors duration-300">
+        <div class="max-w-screen-lg mx-auto flex items-center justify-center text-center">
+          <div class="text-sm" set:html={text} />
+        </div>
+      </div>
+    )}
+  </>
+)}
+
+<style>
+  /* Add any component-specific styles here */
+  a:focus {
+    @apply outline-none ring-2 ring-white ring-opacity-50;
+  }
+</style> 

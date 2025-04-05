@@ -1,0 +1,20 @@
+{
+  "announcements": [
+    {
+      "id": "launch-announcement",
+      "text": "🚀 Welcome to our <strong>new website</strong>! Click to check out our latest features.",
+      "link": "/features",
+      "active": false,
+      "startDate": "2025-04-01",
+      "endDate": "2025-04-31"
+    },
+    {
+      "id": "feature-template",
+      "text": "🚀 <strong>New Feature:</strong> Fill-in-the-blank templates! Click to learn more.",
+      "link": "/features",
+      "active": true,
+      "startDate": "2025-04-01",
+      "endDate": "2025-04-31"
+    }
+  ]
+} 

@@ -2,6 +2,7 @@
 import { SEO } from "astro-seo";
 import Footer from "@components/footer.astro";
 import Navbar from "@components/navbar/navbar.astro";
+import AnnouncementBanner from "@components/AnnouncementBanner.astro";
 import "@fontsource-variable/inter/index.css";
 import '@fontsource-variable/bricolage-grotesque';
 import branding from "@data/branding.json";
@@ -56,6 +57,7 @@ const makeTitle = title
     />
   </head>
   <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <AnnouncementBanner />
     <Navbar />
     <slot />
     <Footer />
