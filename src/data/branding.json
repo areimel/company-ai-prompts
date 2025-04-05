@@ -1,8 +1,8 @@
 {
   "company": {
-    "name": "The Grovery",
-    "legalName": "The Grovery LLC",
-    "website": "https://thegrovery.com/"
+    "name": "Special Projects Division",
+    "legalName": "Special Projects Division, LLC",
+    "website": "https://specialprojectsdivision.com/"
   },
   "site": {
     "name": "AI Prompt Engineering Directory",
@@ -10,13 +10,13 @@
     "logo": {
       "light": {
         "path": "/Placeholder-Logo-Black.png",
-        "alt": "Grovery Logo - Light Mode",
+        "alt": "Whitelabel Logo - Light Mode",
         "width": "60",
         "height": "auto"
       },
       "dark": {
         "path": "/Placeholder-Logo-White.png",
-        "alt": "Grovery Logo - Dark Mode",
+        "alt": "Whitelabel Logo - Dark Mode",
         "width": "60",
         "height": "auto"
       }
@@ -24,25 +24,25 @@
   },
   "social": {
     "twitter": {
-      "handle": "@thegrovery",
-      "url": "https://twitter.com/thegrovery"
+      "handle": "@specialprojectsdiv",
+      "url": "https://twitter.com/specialprojectsdiv"
     }
   },
   "seo": {
-    "title": "The Grovery - AI Prompt Engineering Directory",
-    "description": "The Grovery is your comprehensive directory for marketing-related AI prompts. Find, share, and use effective prompts for various AI applications.",
+    "title": "Special Projects Division - AI Prompt Engineering Directory",
+    "description": "Special Projects Division is your comprehensive directory for marketing-related AI prompts. Find, share, and use effective prompts for various AI applications.",
     "openGraph": {
-      "title": "The Grovery - AI Prompt Directory",
+      "title": "Special Projects Division - AI Prompt Directory",
       "image": {
-        "alt": "The Grovery Homepage Screenshot"
+        "alt": "Special Projects Division Homepage Screenshot"
       }
     }
   },
   "navigation": {
     "primaryLinks": [
       {
-        "title": "Agency Website",
-        "url": "https://thegrovery.com/",
+        "title": "Company Website",
+        "url": "https://specialprojectsdivision.com/",
         "isExternal": true
       }
     ]

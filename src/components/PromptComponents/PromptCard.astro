@@ -19,7 +19,7 @@ const { promptEntry } = Astro.props;
 ---
 
 <div 
-  class="prompt-card block bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700 overflow-hidden"
+  class="prompt-card block bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700 overflow-hidden"
   data-category={promptEntry.data.category}
   data-subcategory={promptEntry.data.sub_category}
   data-tags={JSON.stringify(promptEntry.data.tags)}
@@ -28,14 +28,14 @@ const { promptEntry } = Astro.props;
 >
   <div class="p-4 sm:p-6 flex-shrink-0 border-b border-gray-200 dark:border-gray-700">
     <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-4">
-      <span class="text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/50 px-2 sm:px-3 py-1 rounded-full">
-        {promptEntry.data.category}
-      </span>
       {promptEntry.data.featured && (
         <span class="bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-400 text-xs font-medium px-2 sm:px-2.5 py-1 rounded-full">
           Featured
         </span>
       )}
+      <span class="text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/50 px-2 sm:px-3 py-1 rounded-full">
+        {promptEntry.data.category}
+      </span>
     </div>
 
     <h2 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-2">
@@ -67,9 +67,9 @@ const { promptEntry } = Astro.props;
   <div class="p-3 sm:p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between sm:items-center">
     <a 
       href={`/prompts/${promptEntry.slug}`}
-      class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
+      class="w-full sm:w-auto text-sm bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
     >
-      View Full Details →
+      View Full Prompt →
     </a>
     <button
       class="w-full sm:w-auto text-sm bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors copy-button"

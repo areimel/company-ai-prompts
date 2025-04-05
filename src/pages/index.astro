@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import Container from "@components/container.astro";
-import HeaderSection from "@components/HeaderSection.astro";
+import HomeHeaderSection from "@components/ContentComponents/HomeHeaderSection.astro";
 import SearchFilter from "@components/PromptComponents/SearchFilter.astro";
 import PromptGrid from "@components/PromptComponents/PromptGrid.astro";
 import PromptDirectoryGroup from "@components/PromptComponents/PromptDirectoryGroup.astro";
@@ -10,8 +10,8 @@ import PromptDirectoryGroup from "@components/PromptComponents/PromptDirectoryGr
 ---
 
 <Layout title="AI Prompts Directory">
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <HeaderSection />
+  <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <HomeHeaderSection />
 
     <Container>
       <PromptDirectoryGroup />
