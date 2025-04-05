@@ -1,0 +1,207 @@
+---
+// Component to create a fill-in-the-blanks menu for template prompts
+interface Props {
+  promptText: string; // The original prompt content
+}
+
+const { promptText } = Astro.props;
+---
+
+<div id="templateMenu" class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6">
+  <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Template Variables</h2>
+  <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">
+    This prompt is a template. Any words starting with '@' are fill-in-the-blanks style variables.
+    <br/>
+    Your changes are applied as you type them, and are included when you copy the prompt.
+  </p>
+  <p class="text-sm text-gray-600 dark:text-gray-400 mb-8">
+    Tip: Use the `Tab` key to jump to the next field, `Shift+Tab` to jump to the previous field. 
+  </p>
+  
+  <!-- Template form - will be populated by JavaScript -->
+  <form id="templateForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></form>
+  
+  <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+    <button 
+      id="resetTemplateBtn"
+      class="text-sm bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors mr-2"
+    >
+      Reset
+    </button>
+    <!-- <button
+      id="applyTemplateBtn"
+      class="text-sm bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+    >
+      Apply Changes
+    </button> -->
+  </div>
+</div>
+
+<script>
+  // Store the original prompt text for reset functionality
+  const originalPromptText = document.getElementById('promptContent')?.textContent || '';
+  const templateForm = document.getElementById('templateForm');
+  const resetBtn = document.getElementById('resetTemplateBtn');
+  /* const applyBtn = document.getElementById('applyTemplateBtn'); */
+  const promptContentElement = document.getElementById('promptContent');
+  
+  // Store the variables and their values
+  let templateVariables = new Map();
+  
+  // Function to extract template variables (words starting with @)
+  function extractTemplateVariables(text) {
+    // Regular expression to match words starting with @ symbol
+    // This will find all instances of @variableName in the text
+    const regex = /@(\w+)/g;
+    const variables = new Set();
+    let match;
+    
+    // Find all matches in the text
+    while ((match = regex.exec(text)) !== null) {
+      // Add the variable name (without the @ symbol) to the set
+      variables.add(match[1]);
+    }
+    
+    return Array.from(variables);
+  }
+  
+  // Function to generate the form inputs
+  function generateTemplateForm(variables) {
+    if (!templateForm) return;
+    
+    templateForm.innerHTML = ''; // Clear existing form
+    
+    variables.forEach(variable => {
+      // Store the variable in our map with empty value initially
+      if (!templateVariables.has(variable)) {
+        templateVariables.set(variable, '');
+      }
+      
+      // Create form group
+      const formGroup = document.createElement('div');
+      formGroup.className = 'form-group';
+      
+      // Create label
+      const label = document.createElement('label');
+      label.setAttribute('for', `var-${variable}`);
+      label.className = 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1';
+      label.textContent = `@${variable}`;
+      
+      // Create input
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.id = `var-${variable}`;
+      input.name = variable;
+      input.className = 'w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm mb-4';
+      input.placeholder = `Enter value for @${variable}`;
+      
+      // Add event listener to update the preview when input changes
+      input.addEventListener('input', (e) => {
+        const target = e.target as HTMLInputElement;
+        templateVariables.set(variable, target.value);
+        updatePromptPreview();
+      });
+      
+      // Add elements to form group
+      formGroup.appendChild(label);
+      formGroup.appendChild(input);
+      
+      // Add form group to form
+      templateForm.appendChild(formGroup);
+    });
+  }
+  
+  // Function to update the prompt preview with variable values
+  function updatePromptPreview() {
+    if (!promptContentElement) return;
+    
+    let updatedText = originalPromptText;
+    
+    // Replace each variable in the text
+    templateVariables.forEach((value, variable) => {
+      const regex = new RegExp(`@${variable}`, 'g');
+      
+      if (value) {
+        // Replace @variable with the user's input
+        updatedText = updatedText.replace(regex, value);
+      }
+    });
+    
+    // Update the prompt content
+    promptContentElement.textContent = updatedText;
+  }
+  
+  // Initialize the template form
+  function initTemplateForm() {
+    if (!originalPromptText) return;
+    
+    // Extract variables
+    const variables = extractTemplateVariables(originalPromptText);
+    
+    // Generate form if variables exist
+    if (variables.length > 0) {
+      generateTemplateForm(variables);
+    } else {
+      // No variables found
+      if (templateForm) {
+        templateForm.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400 col-span-1 md:col-span-2 lg:col-span-3">No template variables found in this prompt.</p>';
+      }
+    }
+  }
+  
+  // Reset the form and prompt to original
+  resetBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    
+    // Clear all input fields
+    const inputs = templateForm?.querySelectorAll('input');
+    inputs?.forEach(input => {
+      input.value = '';
+    });
+    
+    // Reset values in the variables map
+    templateVariables.forEach((_, key) => {
+      templateVariables.set(key, '');
+    });
+    
+    // Reset prompt text
+    if (promptContentElement) {
+      promptContentElement.textContent = originalPromptText;
+    }
+  });
+  
+  // Apply changes button (same as filling in all fields, included for UX)
+  /* applyBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    updatePromptPreview();
+    
+    // Optional: visual feedback
+    const button = e.target as HTMLButtonElement;
+    const originalText = button.textContent;
+    button.textContent = 'Applied!';
+    button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+    button.classList.add('bg-green-500', 'hover:bg-green-600');
+    
+    setTimeout(() => {
+      button.textContent = originalText;
+      button.classList.remove('bg-green-500', 'hover:bg-green-600');
+      button.classList.add('bg-blue-500', 'hover:bg-blue-600');
+    }, 2000);
+  }); */
+  
+  // Initialize when the DOM is loaded
+  document.addEventListener('DOMContentLoaded', initTemplateForm);
+</script>
+
+<style>
+  /* Additional styling for form elements */
+  .form-group {
+    margin-bottom: 0;
+  }
+  
+  input:focus {
+    outline: none;
+    ring-color: rgb(59, 130, 246);
+    border-color: rgb(59, 130, 246);
+  }
+</style> 

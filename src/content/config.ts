@@ -41,6 +41,7 @@ const promptsCollection = defineCollection({
       'MidJourney',
       'Other'
     ]),
+    template: z.boolean().default(false).optional(), // Optional template field with default value false
     tags: z.array(z.string()),
     version: z.string().default('1.0'),
     author: z.string().default('Anonymous'),
