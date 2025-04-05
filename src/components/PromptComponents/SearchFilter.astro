@@ -1,0 +1,293 @@
+---
+interface Props {
+  publishedPrompts: any[];
+  categories: string[];
+  categoryCount: Record<string, number>;
+  subCategories: string[];
+  allTags: string[];
+}
+
+const { publishedPrompts, categories, categoryCount, subCategories, allTags } = Astro.props;
+---
+
+<!-- Mobile Menu Toggle -->
+<button
+  id="mobileMenuToggle"
+  class="lg:hidden w-full flex items-center justify-between px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg mb-4"
+>
+  <span class="text-gray-700 dark:text-gray-300 font-medium">Filters</span>
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 dark:text-gray-400 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+  </svg>
+</button>
+
+<!-- Sidebar Content -->
+<div id="sidebarContent" class="hidden lg:block space-y-6">
+  <!-- Search -->
+  <div class="mb-8">
+    <div class="relative mb-2">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search prompts..."
+        autocomplete="off"
+        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+      />
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute right-3 top-2.5 text-gray-400 dark:text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+      </svg>
+    </div>
+    <button
+      id="resetFilters"
+      class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 flex items-center gap-1"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+      </svg>
+      Reset Filters
+    </button>
+  </div>
+
+  <!-- Categories -->
+  <div class="space-y-4">
+    <div>
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Categories</h2>
+      <div class="space-y-2 max-h-96 overflow-y-auto pr-4 mt-3">
+        <button 
+          class="flex items-center justify-between w-full px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors category-filter active"
+          data-category="all"
+        >
+          <span>All Categories</span>
+          <span class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full text-xs">
+            {publishedPrompts.length}
+          </span>
+        </button>
+        {categories.map(category => (
+          <button 
+            class="flex items-center justify-between w-full px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors category-filter"
+            data-category={category}
+          >
+            <span>{category}</span>
+            <span class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full text-xs">
+              {categoryCount[category]}
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div>
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mt-8">AI Applications</h2>
+      <div class="space-y-2 mt-3">
+        <button 
+          class="flex items-center w-full px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors subcategory-filter active"
+          data-subcategory="all"
+        >
+          <span>All Applications</span>
+        </button>
+        {subCategories.map(subCategory => (
+          <button 
+            class="flex items-center w-full px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors subcategory-filter"
+            data-subcategory={subCategory}
+          >
+            <span>{subCategory}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div>
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mt-8">Popular Tags</h2>
+      <div class="flex flex-wrap gap-2 mt-3">
+        {allTags.map(tag => (
+          <button 
+            class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-sm px-3 py-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors tag-filter"
+            data-tag={tag}
+          >
+            {tag}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Custom scrollbar */
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+  }
+  .overflow-y-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+  }
+  .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 2px;
+  }
+  .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #666;
+  }
+
+  /* Active filter states */
+  .category-filter.active,
+  .subcategory-filter.active {
+    @apply bg-blue-50 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400;
+  }
+</style>
+
+<script>
+  // Search and filter functionality
+  const searchInput = document.getElementById('searchInput') as HTMLInputElement;
+  const resetFiltersBtn = document.getElementById('resetFilters') as HTMLButtonElement;
+  const promptCards = document.querySelectorAll<HTMLElement>('.prompt-card');
+  const categoryFilters = document.querySelectorAll<HTMLElement>('.category-filter');
+  const subcategoryFilters = document.querySelectorAll<HTMLElement>('.subcategory-filter');
+  const tagFilters = document.querySelectorAll<HTMLElement>('.tag-filter');
+
+  let activeCategory = 'all';
+  let activeSubcategory = 'all';
+  let activeTags = new Set<string>();
+  let searchQuery = '';
+
+  function resetAllFilters() {
+    // Reset search
+    if (searchInput) {
+      searchInput.value = '';
+      searchQuery = '';
+    }
+
+    // Reset category
+    categoryFilters.forEach(btn => btn.classList.remove('active', 'bg-blue-50', 'text-blue-600'));
+    const allCategoriesBtn = Array.from(categoryFilters).find(btn => btn.dataset.category === 'all');
+    allCategoriesBtn?.classList.add('active', 'bg-blue-50', 'text-blue-600');
+    activeCategory = 'all';
+
+    // Reset subcategory
+    resetSubcategoryFilters();
+
+    // Reset tags
+    resetTagFilters();
+
+    // Update display
+    filterPrompts();
+  }
+
+  function resetSubcategoryFilters() {
+    subcategoryFilters.forEach(btn => btn.classList.remove('active', 'bg-blue-50', 'text-blue-600'));
+    const allSubcategoriesBtn = Array.from(subcategoryFilters).find(btn => btn.dataset.subcategory === 'all');
+    allSubcategoriesBtn?.classList.add('active', 'bg-blue-50', 'text-blue-600');
+    activeSubcategory = 'all';
+  }
+
+  function resetTagFilters() {
+    tagFilters.forEach(btn => {
+      btn.classList.remove('bg-blue-100', 'text-blue-600');
+    });
+    activeTags.clear();
+  }
+
+  function filterPrompts() {
+    promptCards.forEach(card => {
+      const title = (card.dataset.title || '').toLowerCase();
+      const description = (card.dataset.description || '').toLowerCase();
+      const category = card.dataset.category || '';
+      const subcategory = card.dataset.subcategory || '';
+      const tags = JSON.parse(card.dataset.tags || '[]') as string[];
+
+      const matchesSearch = searchQuery === '' || 
+        title.includes(searchQuery) || 
+        description.includes(searchQuery);
+
+      const matchesCategory = activeCategory === 'all' || category === activeCategory;
+      const matchesSubcategory = activeSubcategory === 'all' || subcategory === activeSubcategory;
+      const matchesTags = activeTags.size === 0 || tags.some(tag => activeTags.has(tag));
+
+      card.style.display = matchesSearch && matchesCategory && matchesSubcategory && matchesTags ? 'block' : 'none';
+    });
+  }
+
+  // Search handler
+  searchInput?.addEventListener('input', (e) => {
+    const target = e.target as HTMLInputElement;
+    searchQuery = target.value.toLowerCase();
+    filterPrompts();
+  });
+
+  // Category filter handlers
+  categoryFilters.forEach(button => {
+    button.addEventListener('click', () => {
+      categoryFilters.forEach(btn => btn.classList.remove('active', 'bg-blue-50', 'text-blue-600'));
+      button.classList.add('active', 'bg-blue-50', 'text-blue-600');
+      activeCategory = button.dataset.category || 'all';
+      
+      // Reset other filters when category changes
+      resetSubcategoryFilters();
+      resetTagFilters();
+      
+      filterPrompts();
+    });
+  });
+
+  // Subcategory filter handlers
+  subcategoryFilters.forEach(button => {
+    button.addEventListener('click', () => {
+      subcategoryFilters.forEach(btn => btn.classList.remove('active', 'bg-blue-50', 'text-blue-600'));
+      button.classList.add('active', 'bg-blue-50', 'text-blue-600');
+      activeSubcategory = button.dataset.subcategory || 'all';
+      filterPrompts();
+    });
+  });
+
+  // Tag filter handlers
+  tagFilters.forEach(button => {
+    button.addEventListener('click', () => {
+      const tag = button.dataset.tag || '';
+      if (activeTags.has(tag)) {
+        activeTags.delete(tag);
+        button.classList.remove('bg-blue-100', 'text-blue-600');
+      } else {
+        activeTags.add(tag);
+        button.classList.add('bg-blue-100', 'text-blue-600');
+      }
+      filterPrompts();
+    });
+  });
+
+  // Reset filters button handler
+  resetFiltersBtn?.addEventListener('click', resetAllFilters);
+
+  // Mobile menu toggle functionality
+  const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+  const sidebarContent = document.getElementById('sidebarContent');
+  const menuIcon = mobileMenuToggle?.querySelector('svg');
+
+  mobileMenuToggle?.addEventListener('click', () => {
+    sidebarContent?.classList.toggle('hidden');
+    menuIcon?.classList.toggle('rotate-180');
+  });
+
+  // Hide sidebar when clicking outside on mobile
+  document.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement;
+    if (
+      window.innerWidth < 1024 && // Only on mobile
+      sidebarContent &&
+      !sidebarContent.classList.contains('hidden') &&
+      !target.closest('#sidebarContent') &&
+      !target.closest('#mobileMenuToggle')
+    ) {
+      sidebarContent.classList.add('hidden');
+      menuIcon?.classList.remove('rotate-180');
+    }
+  });
+
+  // Ensure sidebar is visible on desktop
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 1024 && sidebarContent) {
+      sidebarContent.classList.remove('hidden');
+    } else if (window.innerWidth < 1024 && sidebarContent) {
+      sidebarContent.classList.add('hidden');
+    }
+  });
+</script> 

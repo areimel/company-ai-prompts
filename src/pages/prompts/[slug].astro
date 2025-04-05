@@ -1,0 +1,175 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/container.astro";
+
+// Generate a new path for every collection entry
+export async function getStaticPaths() {
+  const promptEntries = await getCollection("prompts");
+  return promptEntries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+// Get the entry directly from the prop on render
+const { entry } = Astro.props;
+---
+
+<Layout title={entry.data.title}>
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <Container>
+      <div class="mx-auto max-w-4xl py-12">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <!-- Header Section -->
+          <div class="p-8 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex flex-wrap items-center gap-3 mb-6">
+              <span class="text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/50 px-3 py-1 rounded-full">
+                {entry.data.category}
+              </span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{entry.data.sub_category}</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">v{entry.data.version}</span>
+              {entry.data.featured && (
+                <span class="bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-400 text-sm font-medium px-3 py-1 rounded-full">
+                  Featured
+                </span>
+              )}
+            </div>
+
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              {entry.data.title}
+            </h1>
+
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Description</h2>
+            <p class="text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-6">
+              {entry.data.description}
+            </p>
+
+            <!-- Usage Instructions -->
+            {entry.data.usage_instructions && (
+              <>
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Usage Instructions</h2>
+                <p class="text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-6 whitespace-pre-line">
+                  {entry.data.usage_instructions}
+                </p>
+              </>
+            )}
+
+            <div class="flex flex-wrap gap-2 mb-6">
+              {entry.data.tags.map((tag) => (
+                <span class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-sm px-3 py-1 rounded-full">
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            <div class="flex flex-wrap gap-3 text-sm text-gray-500 dark:text-gray-400">
+              <span>By {entry.data.author}</span>
+              <span class="hidden sm:inline">•</span>
+              <time datetime={entry.data.publishDate.toISOString()}>
+                Published {entry.data.publishDate.toDateString()}
+              </time>
+              {entry.data.lastUpdated && (
+                <>
+                  <span class="hidden sm:inline">•</span>
+                  <time datetime={entry.data.lastUpdated.toISOString()}>
+                    Last Updated {entry.data.lastUpdated.toDateString()}
+                  </time>
+                </>
+              )}
+            </div>
+          </div>
+
+          <!-- Prompt Content -->
+          <div class="border-b border-gray-200 dark:border-gray-700">
+            <div class="p-4 sm:p-8">
+              <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Prompt Text</h2>
+                <div>
+
+                  <button
+                    id="copyLink"
+                    class="w-full sm:w-auto text-sm bg-blue-500 text-white px-4 py-2 m-1 rounded hover:bg-blue-600 transition-colors"
+                  >
+                    Copy Link
+                  </button>
+                  <button
+                  id="copyPrompt"
+                  class="w-full sm:w-auto text-sm bg-blue-500 text-white px-4 py-2 m-1 rounded hover:bg-blue-600 transition-colors"
+                >
+                  Copy Prompt
+                </button>
+                </div>
+              </div>
+              <div class="bg-gray-50 dark:bg-gray-900 rounded-lg border-2 border-gray-200 dark:border-gray-700">
+                <pre id="promptContent" class="whitespace-pre-wrap text-sm font-mono p-4 sm:p-6 text-gray-800 dark:text-gray-200 overflow-x-auto">{entry.body}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </div>
+</Layout>
+
+<script>
+  // Copy prompt functionality
+  document.getElementById('copyPrompt')?.addEventListener('click', () => {
+    const promptContent = document.getElementById('promptContent')?.textContent || '';
+    navigator.clipboard.writeText(promptContent);
+    
+    // Optional: Add copy feedback
+    const button = document.getElementById('copyPrompt');
+    if (button) {
+      const originalText = button.textContent;
+      button.textContent = 'Copied!';
+      button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+      button.classList.add('bg-green-500', 'hover:bg-green-600');
+      
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.classList.remove('bg-green-500', 'hover:bg-green-600');
+        button.classList.add('bg-blue-500', 'hover:bg-blue-600');
+      }, 2000);
+    }
+  });
+
+  // Copy link functionality
+  document.getElementById('copyLink')?.addEventListener('click', () => {
+    const pageUrl = window.location.href;
+    navigator.clipboard.writeText(pageUrl);
+    
+    // Optional: Add copy feedback
+    const button = document.getElementById('copyLink');
+    if (button) {
+      const originalText = button.textContent;
+      button.textContent = 'Link Copied!';
+      button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+      button.classList.add('bg-green-500', 'hover:bg-green-600');
+      
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.classList.remove('bg-green-500', 'hover:bg-green-600');
+        button.classList.add('bg-blue-500', 'hover:bg-blue-600');
+      }, 2000);
+    }
+  });
+</script>
+
+<style>
+  /* Custom scrollbar */
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+  }
+  .overflow-y-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+  }
+  .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 2px;
+  }
+  .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #666;
+  }
+</style> 

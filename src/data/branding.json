@@ -1,0 +1,50 @@
+{
+  "company": {
+    "name": "The Grovery",
+    "legalName": "The Grovery LLC",
+    "website": "https://thegrovery.com/"
+  },
+  "site": {
+    "name": "AI Prompt Engineering Directory",
+    "description": "A curated collection of effective prompts for various AI applications.",
+    "logo": {
+      "light": {
+        "path": "/Placeholder-Logo-Black.png",
+        "alt": "Grovery Logo - Light Mode",
+        "width": "60",
+        "height": "auto"
+      },
+      "dark": {
+        "path": "/Placeholder-Logo-White.png",
+        "alt": "Grovery Logo - Dark Mode",
+        "width": "60",
+        "height": "auto"
+      }
+    }
+  },
+  "social": {
+    "twitter": {
+      "handle": "@thegrovery",
+      "url": "https://twitter.com/thegrovery"
+    }
+  },
+  "seo": {
+    "title": "The Grovery - AI Prompt Engineering Directory",
+    "description": "The Grovery is your comprehensive directory for marketing-related AI prompts. Find, share, and use effective prompts for various AI applications.",
+    "openGraph": {
+      "title": "The Grovery - AI Prompt Directory",
+      "image": {
+        "alt": "The Grovery Homepage Screenshot"
+      }
+    }
+  },
+  "navigation": {
+    "primaryLinks": [
+      {
+        "title": "Agency Website",
+        "url": "https://thegrovery.com/",
+        "isExternal": true
+      }
+    ]
+  }
+} 

@@ -1,0 +1,15 @@
+---
+import PromptCard from "./PromptCard.astro";
+
+interface Props {
+  publishedPrompts: any[];
+}
+
+const { publishedPrompts } = Astro.props;
+---
+
+<div id="promptsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+  {publishedPrompts.map((promptEntry) => (
+    <PromptCard promptEntry={promptEntry} />
+  ))}
+</div> 

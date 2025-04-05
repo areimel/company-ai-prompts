@@ -1,0 +1,379 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/container.astro";
+
+// Filter prompt entries with 'draft: false' & date before current date
+const publishedPrompts = await getCollection("prompts", ({ data }) => {
+  return !data.draft && data.publishDate < new Date();
+});
+
+// Sort content entries by publication date
+publishedPrompts.sort(function (a, b) {
+  return b.data.publishDate.valueOf() - a.data.publishDate.valueOf();
+});
+
+// Get unique categories and count prompts in each
+const categories = [...new Set(publishedPrompts.map(prompt => prompt.data.category))];
+const categoryCount = categories.reduce((acc, category) => {
+  acc[category] = publishedPrompts.filter(prompt => prompt.data.category === category).length;
+  return acc;
+}, {});
+
+// Get unique sub-categories
+const subCategories = [...new Set(publishedPrompts.map(prompt => prompt.data.sub_category))];
+
+// Get all unique tags
+const allTags = [...new Set(publishedPrompts.flatMap(prompt => prompt.data.tags))];
+
+// Render all prompt contents
+const renderedPrompts = await Promise.all(
+  publishedPrompts.map(async (prompt) => {
+    const { Content } = await prompt.render();
+    return { ...prompt, Content };
+  })
+);
+---
+
+<Layout title="AI Prompts Directory">
+  <div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200">
+      <Container>
+        <div class="py-6">
+          <h1 class="text-3xl font-bold text-gray-900">AI Prompts Directory</h1>
+          <p class="mt-2 text-gray-600">A curated collection of effective prompts for various AI applications.</p>
+        </div>
+      </Container>
+    </header>
+
+    <Container>
+      <div class="flex gap-8 py-8">
+        <!-- Sidebar -->
+        <div class="w-64 flex-shrink-0">
+          <!-- Search -->
+          <div class="mb-8">
+            <div class="relative mb-2">
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Search prompts..."
+                autocomplete="off"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute right-3 top-2.5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <button
+              id="resetFilters"
+              class="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+              </svg>
+              Reset Filters
+            </button>
+          </div>
+
+          <!-- Categories -->
+          <div class="space-y-4">
+            <div>
+              <h2 class="text-lg font-semibold text-gray-900">Categories</h2>
+              <div class="space-y-2 max-h-96 overflow-y-auto pr-4 mt-3">
+                <button 
+                  class="flex items-center justify-between w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors category-filter active"
+                  data-category="all"
+                >
+                  <span>All Categories</span>
+                  <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">
+                    {publishedPrompts.length}
+                  </span>
+                </button>
+                {categories.map(category => (
+                  <button 
+                    class="flex items-center justify-between w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors category-filter"
+                    data-category={category}
+                  >
+                    <span>{category}</span>
+                    <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">
+                      {categoryCount[category]}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h2 class="text-lg font-semibold text-gray-900 mt-8">AI Applications</h2>
+              <div class="space-y-2 mt-3">
+                <button 
+                  class="flex items-center w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors subcategory-filter active"
+                  data-subcategory="all"
+                >
+                  <span>All Applications</span>
+                </button>
+                {subCategories.map(subCategory => (
+                  <button 
+                    class="flex items-center w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors subcategory-filter"
+                    data-subcategory={subCategory}
+                  >
+                    <span>{subCategory}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h2 class="text-lg font-semibold text-gray-900 mt-8">Popular Tags</h2>
+              <div class="flex flex-wrap gap-2 mt-3">
+                {allTags.map(tag => (
+                  <button 
+                    class="bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full hover:bg-gray-200 transition-colors tag-filter"
+                    data-tag={tag}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1">
+          <div id="promptsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {publishedPrompts.map((promptEntry) => (
+              <div 
+                class="prompt-card block bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 overflow-hidden"
+                data-category={promptEntry.data.category}
+                data-subcategory={promptEntry.data.sub_category}
+                data-tags={JSON.stringify(promptEntry.data.tags)}
+                data-title={promptEntry.data.title}
+                data-description={promptEntry.data.description}
+              >
+                <div class="p-6 flex-shrink-0 border-b">
+                  <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                      {promptEntry.data.category}
+                    </span>
+                    {promptEntry.data.featured && (
+                      <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-1 rounded-full">
+                        Featured
+                      </span>
+                    )}
+                  </div>
+
+                  <h2 class="text-lg font-semibold text-gray-900 mb-2">
+                    {promptEntry.data.title}
+                  </h2>
+
+                  <p class="text-gray-600 text-sm mb-4">
+                    {promptEntry.data.description}
+                  </p>
+
+                  <div class="flex flex-wrap gap-2 mb-4">
+                    {promptEntry.data.tags.slice(0, 3).map((tag) => (
+                      <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div class="flex items-center justify-between text-sm text-gray-500">
+                    <span>{promptEntry.data.sub_category}</span>
+                    <span>v{promptEntry.data.version}</span>
+                  </div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto h-[250px] border-2 border-gray-200 rounded-lg m-6">
+                  <pre class="whitespace-pre-wrap text-sm font-mono p-6 text-gray-800">{promptEntry.body}</pre>
+                </div>
+
+                <div class="p-4 border-t bg-gray-50 flex justify-between items-center">
+                  <a 
+                    href={`/prompts/${promptEntry.slug}`}
+                    class="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                  >
+                    View Full Details →
+                  </a>
+                  <button
+                    class="text-sm bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors copy-button"
+                  >
+                    Copy Prompt
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </Container>
+  </div>
+</Layout>
+
+<script>
+  // Search and filter functionality
+  const searchInput = document.getElementById('searchInput') as HTMLInputElement;
+  const resetFiltersBtn = document.getElementById('resetFilters') as HTMLButtonElement;
+  const promptCards = document.querySelectorAll<HTMLElement>('.prompt-card');
+  const categoryFilters = document.querySelectorAll<HTMLElement>('.category-filter');
+  const subcategoryFilters = document.querySelectorAll<HTMLElement>('.subcategory-filter');
+  const tagFilters = document.querySelectorAll<HTMLElement>('.tag-filter');
+
+  let activeCategory = 'all';
+  let activeSubcategory = 'all';
+  let activeTags = new Set<string>();
+  let searchQuery = '';
+
+  function resetAllFilters() {
+    // Reset search
+    if (searchInput) {
+      searchInput.value = '';
+      searchQuery = '';
+    }
+
+    // Reset category
+    categoryFilters.forEach(btn => btn.classList.remove('active', 'bg-blue-50', 'text-blue-600'));
+    const allCategoriesBtn = Array.from(categoryFilters).find(btn => btn.dataset.category === 'all');
+    allCategoriesBtn?.classList.add('active', 'bg-blue-50', 'text-blue-600');
+    activeCategory = 'all';
+
+    // Reset subcategory
+    resetSubcategoryFilters();
+
+    // Reset tags
+    resetTagFilters();
+
+    // Update display
+    filterPrompts();
+  }
+
+  function resetSubcategoryFilters() {
+    subcategoryFilters.forEach(btn => btn.classList.remove('active', 'bg-blue-50', 'text-blue-600'));
+    const allSubcategoriesBtn = Array.from(subcategoryFilters).find(btn => btn.dataset.subcategory === 'all');
+    allSubcategoriesBtn?.classList.add('active', 'bg-blue-50', 'text-blue-600');
+    activeSubcategory = 'all';
+  }
+
+  function resetTagFilters() {
+    tagFilters.forEach(btn => {
+      btn.classList.remove('bg-blue-100', 'text-blue-600');
+    });
+    activeTags.clear();
+  }
+
+  function filterPrompts() {
+    promptCards.forEach(card => {
+      const title = (card.dataset.title || '').toLowerCase();
+      const description = (card.dataset.description || '').toLowerCase();
+      const category = card.dataset.category || '';
+      const subcategory = card.dataset.subcategory || '';
+      const tags = JSON.parse(card.dataset.tags || '[]') as string[];
+
+      const matchesSearch = searchQuery === '' || 
+        title.includes(searchQuery) || 
+        description.includes(searchQuery);
+
+      const matchesCategory = activeCategory === 'all' || category === activeCategory;
+      const matchesSubcategory = activeSubcategory === 'all' || subcategory === activeSubcategory;
+      const matchesTags = activeTags.size === 0 || tags.some(tag => activeTags.has(tag));
+
+      card.style.display = matchesSearch && matchesCategory && matchesSubcategory && matchesTags ? 'block' : 'none';
+    });
+  }
+
+  // Search handler
+  searchInput?.addEventListener('input', (e) => {
+    const target = e.target as HTMLInputElement;
+    searchQuery = target.value.toLowerCase();
+    filterPrompts();
+  });
+
+  // Category filter handlers
+  categoryFilters.forEach(button => {
+    button.addEventListener('click', () => {
+      categoryFilters.forEach(btn => btn.classList.remove('active', 'bg-blue-50', 'text-blue-600'));
+      button.classList.add('active', 'bg-blue-50', 'text-blue-600');
+      activeCategory = button.dataset.category || 'all';
+      
+      // Reset other filters when category changes
+      resetSubcategoryFilters();
+      resetTagFilters();
+      
+      filterPrompts();
+    });
+  });
+
+  // Subcategory filter handlers
+  subcategoryFilters.forEach(button => {
+    button.addEventListener('click', () => {
+      subcategoryFilters.forEach(btn => btn.classList.remove('active', 'bg-blue-50', 'text-blue-600'));
+      button.classList.add('active', 'bg-blue-50', 'text-blue-600');
+      activeSubcategory = button.dataset.subcategory || 'all';
+      filterPrompts();
+    });
+  });
+
+  // Tag filter handlers
+  tagFilters.forEach(button => {
+    button.addEventListener('click', () => {
+      const tag = button.dataset.tag || '';
+      if (activeTags.has(tag)) {
+        activeTags.delete(tag);
+        button.classList.remove('bg-blue-100', 'text-blue-600');
+      } else {
+        activeTags.add(tag);
+        button.classList.add('bg-blue-100', 'text-blue-600');
+      }
+      filterPrompts();
+    });
+  });
+
+  // Copy functionality
+  document.querySelectorAll('.copy-button').forEach(button => {
+    button.addEventListener('click', () => {
+      const card = button.closest('.prompt-card');
+      const promptContent = card?.querySelector('pre')?.textContent || '';
+      navigator.clipboard.writeText(promptContent);
+      
+      const originalText = button.textContent;
+      button.textContent = 'Copied!';
+      button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+      button.classList.add('bg-green-500', 'hover:bg-green-600');
+      
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.classList.remove('bg-green-500', 'hover:bg-green-600');
+        button.classList.add('bg-blue-500', 'hover:bg-blue-600');
+      }, 2000);
+    });
+  });
+
+  // Reset filters button handler
+  resetFiltersBtn?.addEventListener('click', resetAllFilters);
+</script>
+
+<style>
+  /* Custom scrollbar */
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+  }
+  .overflow-y-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+  }
+  .overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 2px;
+  }
+  .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #666;
+  }
+
+  /* Active filter states */
+  .category-filter.active,
+  .subcategory-filter.active {
+    @apply bg-blue-50 text-blue-600;
+  }
+</style> 

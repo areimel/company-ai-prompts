@@ -1,0 +1,31 @@
+---
+interface Props {
+  href: string;
+  target?: "_blank" | "_self";
+  class?: string;
+}
+
+const { href, target = "_self", class: className } = Astro.props;
+---
+
+<a
+  href={href}
+  target={target}
+  rel={target === "_blank" ? "noopener noreferrer" : undefined}
+  class:list={[
+    // Base styles
+    "inline-flex items-center justify-center px-4 py-2 rounded-lg",
+    // Border and colors
+    "border-2 border-gray-800 dark:border-gray-200",
+    // Text styles
+    "text-gray-800 dark:text-gray-200",
+    // Hover states
+    "hover:bg-gray-100 dark:hover:bg-gray-800",
+    // Transition
+    "transition duration-200",
+    // Custom classes
+    className
+  ]}
+>
+  <slot />
+</a> 

@@ -1,0 +1,102 @@
+---
+interface Props {
+  promptEntry: {
+    data: {
+      category: string;
+      featured: boolean;
+      title: string;
+      description: string;
+      tags: string[];
+      sub_category: string;
+      version: string;
+    };
+    body: string;
+    slug: string;
+  };
+}
+
+const { promptEntry } = Astro.props;
+---
+
+<div 
+  class="prompt-card block bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700 overflow-hidden"
+  data-category={promptEntry.data.category}
+  data-subcategory={promptEntry.data.sub_category}
+  data-tags={JSON.stringify(promptEntry.data.tags)}
+  data-title={promptEntry.data.title}
+  data-description={promptEntry.data.description}
+>
+  <div class="p-4 sm:p-6 flex-shrink-0 border-b border-gray-200 dark:border-gray-700">
+    <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-4">
+      <span class="text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/50 px-2 sm:px-3 py-1 rounded-full">
+        {promptEntry.data.category}
+      </span>
+      {promptEntry.data.featured && (
+        <span class="bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-400 text-xs font-medium px-2 sm:px-2.5 py-1 rounded-full">
+          Featured
+        </span>
+      )}
+    </div>
+
+    <h2 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-2">
+      {promptEntry.data.title}
+    </h2>
+
+    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+      {promptEntry.data.description}
+    </p>
+
+    <div class="flex flex-wrap gap-2 mb-4">
+      {promptEntry.data.tags.slice(0, 3).map((tag) => (
+        <span class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs px-2 py-1 rounded-full">
+          {tag}
+        </span>
+      ))}
+    </div>
+
+    <div class="flex items-center justify-between text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+      <span class="truncate">AI Tool: {promptEntry.data.sub_category}</span>
+      <span>v{promptEntry.data.version}</span>
+    </div>
+  </div>
+
+  <div class="flex-1 overflow-y-auto h-[200px] sm:h-[250px] border-2 border-gray-200 dark:border-gray-700 rounded-lg mx-3 sm:mx-6 my-3 sm:my-6">
+    <pre class="whitespace-pre-wrap text-xs sm:text-sm font-mono p-4 sm:p-6 text-gray-800 dark:text-gray-200">{promptEntry.body}</pre>
+  </div>
+
+  <div class="p-3 sm:p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between sm:items-center">
+    <a 
+      href={`/prompts/${promptEntry.slug}`}
+      class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
+    >
+      View Full Details →
+    </a>
+    <button
+      class="w-full sm:w-auto text-sm bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors copy-button"
+    >
+      Copy Prompt
+    </button>
+  </div>
+</div>
+
+<script>
+  // Copy functionality
+  document.querySelectorAll('.copy-button').forEach(button => {
+    button.addEventListener('click', () => {
+      const card = button.closest('.prompt-card');
+      const promptContent = card?.querySelector('pre')?.textContent || '';
+      navigator.clipboard.writeText(promptContent);
+      
+      const originalText = button.textContent;
+      button.textContent = 'Copied!';
+      button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+      button.classList.add('bg-green-500', 'hover:bg-green-600');
+      
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.classList.remove('bg-green-500', 'hover:bg-green-600');
+        button.classList.add('bg-blue-500', 'hover:bg-blue-600');
+      }, 2000);
+    });
+  });
+</script> 
