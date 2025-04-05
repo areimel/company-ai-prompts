@@ -23,37 +23,37 @@ const { Content } = await entry.render();
       <span class="text-blue-400 uppercase tracking-wider text-xs sm:text-sm font-medium">
         {entry.data.category}
       </span>
-      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold lg:tracking-tight mt-1 lg:leading-tight">
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold lg:tracking-tight mt-1 lg:leading-tight text-gray-900 dark:text-white">
         {entry.data.title}
       </h1>
       <div class="flex flex-wrap gap-2 mt-3 items-center">
-        <span class="text-sm text-gray-400">
+        <span class="text-sm text-gray-500 dark:text-gray-400">
           {entry.data.author}
         </span>
-        <span class="text-gray-400 hidden sm:inline">•</span>
+        <span class="text-gray-400 dark:text-gray-500 hidden sm:inline">•</span>
         <time
-          class="text-sm text-gray-400"
+          class="text-sm text-gray-500 dark:text-gray-400"
           datetime={entry.data.publishDate.toISOString()}>
           {entry.data.publishDate.toDateString()}
         </time>
-        <span class="text-gray-400 hidden sm:inline">•</span>
+        <span class="text-gray-400 dark:text-gray-500 hidden sm:inline">•</span>
         <div class="w-full sm:w-auto flex flex-wrap gap-2 sm:gap-3 mt-2 sm:mt-0">
           {
             entry.data.tags.map((tag) => (
-              <span class="text-xs sm:text-sm text-gray-500">#{tag}</span>
+              <span class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">#{tag}</span>
             ))
           }
         </div>
       </div>
     </div>
 
-    <div class="mx-auto prose prose-lg mt-6 max-w-3xl px-4 sm:px-0">
+    <div class="mx-auto prose prose-lg dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 hover:prose-a:text-blue-800 dark:hover:prose-a:text-blue-300 prose-img:rounded-lg mt-6 max-w-3xl px-4 sm:px-0">
       <Content />
     </div>
     <div class="text-center mt-8 mb-8 sm:mb-0">
       <a
         href="/blog"
-        class="bg-gray-100 px-4 sm:px-5 py-2 sm:py-3 rounded-md hover:bg-gray-200 transition text-sm sm:text-base"
+        class="bg-gray-100 dark:bg-gray-800 px-4 sm:px-5 py-2 sm:py-3 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition text-gray-800 dark:text-gray-200 text-sm sm:text-base"
         >← Back to Blog</a
       >
     </div>
