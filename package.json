@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^3.0.1",
+    "@astrojs/netlify": "^6.3.3",
     "@astrojs/sitemap": "^3.1.5",
     "@astrojs/tailwind": "^5.1.0",
     "@fontsource-variable/bricolage-grotesque": "^5.0.6",

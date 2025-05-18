@@ -1,7 +1,7 @@
-import { GoogleGenAI } from '@google/genai';
-
 // Tell Astro to render this endpoint on-demand (not at build time)
 export const prerender = false;
+
+import { GoogleGenAI } from '@google/genai';
 
 // A dead-simple API endpoint for Gemini
 export async function POST({ request }) {
