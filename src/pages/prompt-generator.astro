@@ -1,0 +1,138 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/container.astro";
+import HomeHeaderSection from "@components/ContentComponents/HomeHeaderSection.astro";
+import SearchFilter from "@components/PromptComponents/SearchFilter.astro";
+import PromptGrid from "@components/PromptComponents/PromptGrid.astro";
+import PromptDirectoryGroup from "@components/PromptComponents/PromptDirectoryGroup.astro";
+
+// Tell Astro to render this page on-demand
+//export const prerender = false;
+
+// Define the system instruction for the AI
+const systemInstruction = "You are a helpful AI assistant that generates creative and useful prompts.";
+const apiKey = "AIzaSyAiN-ESjJzTi8uozCH35livfVSFppCvYCE";
+---
+
+<Layout title="AI Prompt Generator">
+  <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+    
+    <section>
+      <Container>
+        <h1>AI Prompt Generator</h1>
+        <p>
+          Generate prompts for your AI projects with ease.
+        </p>
+
+        <!-- Use a native form with POST method -->
+        <form 
+          id="prompt-form" 
+          class="mt-6" 
+          method="post"
+          action="/api/generate-simple" 
+          enctype="application/x-www-form-urlencoded"
+        >
+          <textarea 
+            name="prompt" 
+            id="prompt" 
+            placeholder="Enter your prompt here"
+            class="w-full p-4 border rounded-md dark:bg-gray-800 dark:border-gray-700"
+            rows="5"
+          ></textarea>
+          
+          <button 
+            type="submit" 
+            id="generate-button"
+            class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            Generate
+          </button>
+        </form>
+        
+        <div class="mt-8 p-4 border rounded-md bg-white dark:bg-gray-800 dark:border-gray-700">
+          <p class="font-medium mb-2">Generated Prompt:</p>
+          <p id="generated-prompt" class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+            Your generated prompt will appear here...
+          </p>
+        </div>
+      </Container>
+    </section>
+
+  </div>
+</Layout>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById("prompt-form");
+    const promptField = document.getElementById("prompt");
+    const resultElement = document.getElementById("generated-prompt");
+    
+    if (form && promptField && resultElement) {
+      // Override the form's submission
+      form.addEventListener("submit", async function(event) {
+        // Prevent default form submission
+        event.preventDefault();
+        
+        try {
+          // Show loading state
+          resultElement.textContent = "Generating...";
+          
+          // Get form data directly
+          const formData = new FormData(form);
+          const promptText = formData.get("prompt")?.toString() || "";
+          
+          console.log("Prompt text from FormData:", promptText);
+          console.log("Prompt length:", promptText.length);
+          
+          if (!promptText || promptText.trim() === "") {
+            resultElement.textContent = "Please enter a prompt.";
+            return;
+          }
+          
+          // Create URLSearchParams from FormData
+          const urlSearchParams = new URLSearchParams();
+          for (const [key, value] of formData.entries()) {
+            urlSearchParams.append(key, value.toString());
+          }
+          
+          console.log("Form data as URLSearchParams:", urlSearchParams.toString());
+          
+          // Make the request
+          const response = await fetch("/api/generate-simple", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: urlSearchParams.toString()
+          });
+          
+          console.log("Response status:", response.status);
+          
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Server error: ${response.status} - ${errorText}`);
+          }
+          
+          // Get and display the response
+          const data = await response.json();
+          resultElement.textContent = data.generatedText;
+          
+        } catch (error) {
+          console.error("Error:", error);
+          resultElement.textContent = "Error: " + (error.message || "Failed to generate prompt");
+        }
+      });
+    }
+  });
+</script>
+
+<style>
+  h1 {
+    @apply text-3xl font-bold mb-2 text-gray-800 dark:text-white;
+  }
+  
+  p {
+    @apply text-gray-600 dark:text-gray-300;
+  }
+</style>
