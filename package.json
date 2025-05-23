@@ -9,7 +9,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro", 
-    "img-compress": "optimizt public/*.jpg public/*.png"
+    "img-compress": "optimizt public/*.jpg public/*.jpeg public/*.png"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.2.6",
