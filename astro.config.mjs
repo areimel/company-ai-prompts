@@ -8,7 +8,7 @@ import netlify from "@astrojs/netlify";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://astroship.web3templates.com",
+  site: "https://company-ai-prompts.netlify.app",
   output: "static",
   integrations: [tailwind(), mdx(), sitemap(), icon()],
   adapter: netlify(),
