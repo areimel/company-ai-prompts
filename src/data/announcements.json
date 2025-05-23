@@ -15,6 +15,14 @@
       "active": true,
       "startDate": "2025-04-01",
       "endDate": "2025-07-31"
+    },
+    {
+      "id": "feature-ai-prompt-generator",
+      "text": "🚀 <strong>New Feature:</strong> AI Prompt Generator! Click to learn more.",
+      "link": "/blog/ai-prompt-generator-feature",
+      "active": false,
+      "startDate": "2025-07-31",
+      "endDate": "2025-09-31"
     }
   ]
 } 

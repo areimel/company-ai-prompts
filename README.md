@@ -1,4 +1,4 @@
-# In-House AI Prompt Directory
+# Company AI Prompt Directory
 
 Your own custom AI prompt library. Free for personal and commercial use. Share AI prompts across your company, or with your friends.
 
@@ -18,11 +18,6 @@ This project is based on the Astroship template, and is largely based on [cursor
 *   Content Management: [Astro Content Collections](https://docs.astro.build/en/guides/content-collections/) (using Markdown/MDX)
 
 ## Getting Started
-
-### Prerequisites
-
-*   Node.js (Check Astro documentation for compatible versions)
-*   pnpm (Install using `npm install -g pnpm` or see [pnpm installation guide](https://pnpm.io/installation))
 
 ### Installation
 
@@ -66,7 +61,3 @@ This project is based on the Astroship template, and is largely based on [cursor
 ├── tailwind.config.cjs  # TailwindCSS configuration file
 └── package.json         # Project dependencies and scripts
 ```
-
-## Credits
-
-This project is based on the [Astroship](https://github.com/surjithctly/astroship) template, originally created by [Surjith S M](https://github.com/surjithctly) and sponsored by [Web3Templates](https://web3templates.com).
