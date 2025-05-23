@@ -11,7 +11,7 @@
     {
       "id": "feature-template",
       "text": "🚀 <strong>New Feature:</strong> Fill-in-the-blank templates! Click to learn more.",
-      "link": "/features",
+      "link": "/blog/template-prompts-feature",
       "active": true,
       "startDate": "2025-04-01",
       "endDate": "2025-07-31"
