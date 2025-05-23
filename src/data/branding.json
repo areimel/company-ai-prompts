@@ -1,12 +1,12 @@
 {
   "company": {
-    "name": "Special Projects Division",
-    "legalName": "Special Projects Division, LLC",
-    "website": "https://specialprojectsdivision.com/"
+    "name": "Alec Reimel",
+    "legalName": "Alec Reimel",
+    "website": "https://alecreimel.com/"
   },
   "site": {
-    "name": "AI Prompt Engineering Directory",
-    "description": "A curated collection of effective prompts for various AI applications.",
+    "name": "AI Prompt Directory",
+    "description": "A library for storing and sharing AI prompts across your company, organization, or team. Get your own AI Prompt Directory today and empower your team to use AI to its fullest potential.",
     "logo": {
       "light": {
         "path": "/Placeholder-Logo-Black.png",
@@ -24,17 +24,17 @@
   },
   "social": {
     "twitter": {
-      "handle": "@specialprojectsdiv",
-      "url": "https://twitter.com/specialprojectsdiv"
+      "handle": "@alecreimel",
+      "url": "https://twitter.com/alecreimel"
     }
   },
   "seo": {
-    "title": "Special Projects Division - AI Prompt Engineering Directory",
-    "description": "Special Projects Division is your comprehensive directory for marketing-related AI prompts. Find, share, and use effective prompts for various AI applications.",
+    "title": "AI Prompt Directory | Alec Reimel",
+    "description": "A library for storing and sharing AI prompts across your company, organization, or team. Get your own AI Prompt Directory today and empower your team to use AI to its fullest potential.",
     "openGraph": {
-      "title": "Special Projects Division - AI Prompt Directory",
+      "title": "AI Prompt Directory | Alec Reimel",
       "image": {
-        "alt": "Special Projects Division Homepage Screenshot"
+        "alt": "AI Prompt Directory Homepage Screenshot"
       }
     }
   },
@@ -42,7 +42,7 @@
     "primaryLinks": [
       {
         "title": "Company Website",
-        "url": "https://specialprojectsdivision.com/",
+        "url": "https://alecreimel.com/",
         "isExternal": true
       }
     ]
