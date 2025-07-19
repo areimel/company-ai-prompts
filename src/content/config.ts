@@ -51,6 +51,38 @@ const promptsCollection = defineCollection({
   }),
 });
 
+const personasCollection = defineCollection({
+  schema: z.object({
+    draft: z.boolean(),
+    title: z.string(),
+    description: z.string(),
+    usage_instructions: z.string(),
+    category: z.enum([
+      'Assistant',
+      'Creative',
+      'Technical',
+      'Business',
+      'Educational',
+      'Specialized'
+    ]),
+    sub_category: z.enum([
+      'General',
+      'Customer Service',
+      'Content Creation',
+      'Code Review',
+      'Teaching',
+      'Research',
+      'Other'
+    ]),
+    tags: z.array(z.string()),
+    version: z.string().default('1.0'),
+    author: z.string().default('Anonymous'),
+    publishDate: z.string().transform(str => new Date(str)),
+    lastUpdated: z.string().transform(str => new Date(str)),
+    featured: z.boolean().default(false),
+  }),
+});
+
 const teamCollection = defineCollection({
   schema: z.object({
     draft: z.boolean(),
@@ -69,5 +101,6 @@ const teamCollection = defineCollection({
 export const collections = {
   'blog': blogCollection,
   'prompts': promptsCollection,
+  'personas': personasCollection,
   'team': teamCollection,
 };

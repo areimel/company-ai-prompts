@@ -3,34 +3,40 @@ import { getCollection } from "astro:content";
 import SearchFilter from "@components/PromptComponents/SearchFilter.astro";
 import PromptGrid from "@components/PromptComponents/PromptGrid.astro";
 
-// Filter prompt entries with 'draft: false' & date before current date
-const publishedPrompts = await getCollection("prompts", ({ data }) => {
+interface Props {
+  collectionType?: 'prompts' | 'personas';
+}
+
+const { collectionType = 'prompts' } = Astro.props;
+
+// Filter entries with 'draft: false' & date before current date
+const publishedItems = await getCollection(collectionType, ({ data }) => {
   return !data.draft && data.publishDate < new Date();
 });
 
 // Sort content entries by publication date
-publishedPrompts.sort(function (a, b) {
+publishedItems.sort(function (a, b) {
   return b.data.publishDate.valueOf() - a.data.publishDate.valueOf();
 });
 
-// Get unique categories and count prompts in each
-const categories = [...new Set(publishedPrompts.map(prompt => prompt.data.category))];
+// Get unique categories and count items in each
+const categories = [...new Set(publishedItems.map(item => item.data.category))];
 const categoryCount = categories.reduce((acc, category) => {
-  acc[category] = publishedPrompts.filter(prompt => prompt.data.category === category).length;
+  acc[category] = publishedItems.filter(item => item.data.category === category).length;
   return acc;
 }, {});
 
 // Get unique sub-categories
-const subCategories = [...new Set(publishedPrompts.map(prompt => prompt.data.sub_category))];
+const subCategories = [...new Set(publishedItems.map(item => item.data.sub_category))];
 
 // Get all unique tags
-const allTags = [...new Set(publishedPrompts.flatMap(prompt => prompt.data.tags))];
+const allTags = [...new Set(publishedItems.flatMap(item => item.data.tags))];
 
-// Render all prompt contents
-const renderedPrompts = await Promise.all(
-  publishedPrompts.map(async (prompt) => {
-    const { Content } = await prompt.render();
-    return { ...prompt, Content };
+// Render all contents
+const renderedItems = await Promise.all(
+  publishedItems.map(async (item) => {
+    const { Content } = await item.render();
+    return { ...item, Content };
   })
 );
 ---
@@ -39,16 +45,17 @@ const renderedPrompts = await Promise.all(
     <!-- Sidebar -->
     <div class="w-full lg:w-64 lg:flex-shrink-0">
         <SearchFilter
-        publishedPrompts={publishedPrompts}
+        publishedItems={publishedItems}
         categories={categories}
         categoryCount={categoryCount}
         subCategories={subCategories}
         allTags={allTags}
+        collectionType={collectionType}
         />
     </div>
 
     <!-- Main Content -->
     <div class="flex-1">
-        <PromptGrid publishedPrompts={publishedPrompts} />
+        <PromptGrid publishedItems={publishedItems} collectionType={collectionType} />
     </div>
 </div>
