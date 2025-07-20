@@ -33,28 +33,21 @@ const legalLinks = [
   }
 ];
 
-const socialLinks = [
-  {
-    name: "Facebook",
-    icon: "simple-icons:facebook",
-    url: branding.social.facebook?.url || "#"
-  },
-  {
-    name: "Instagram",
-    icon: "simple-icons:instagram",
-    url: branding.social.instagram?.url || "#"
-  },
-  {
-    name: "Twitter",
-    icon: "simple-icons:twitter",
-    url: branding.social.twitter.url
-  },
-  {
-    name: "Pinterest",
-    icon: "simple-icons:pinterest",
-    url: branding.social.pinterest?.url || "#"
-  }
-];
+// Generate social links from branding.json
+const socialLinks = branding.footer.social.enabled
+  .map(platform => {
+    const socialData = branding.social[platform];
+    const iconData = branding.footer.social.icons[platform];
+    
+    if (!socialData || !iconData) return null;
+    
+    return {
+      name: platform.charAt(0).toUpperCase() + platform.slice(1),
+      icon: iconData,
+      url: socialData.url || "#"
+    };
+  })
+  .filter(link => link !== null);
 ---
 
 <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 py-4">
@@ -62,9 +55,9 @@ const socialLinks = [
     {/* Left Side */}
     <div>
       <h2 class="text-4xl font-bold mb-6 text-gray-900 dark:text-white">
-        We're building cool things every day. 
+        {branding.footer.newsletter.title}
         <br/>
-        Sign up to receive the latest news.
+        {branding.footer.newsletter.subtitle}
       </h2>
       
       <FooterNewsletterForm />
