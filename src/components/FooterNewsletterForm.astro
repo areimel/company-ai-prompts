@@ -1,8 +1,27 @@
 ---
 // FooterNewsletterForm.astro - Newsletter signup form component
+// Uses Web3Forms for form submission handling
 ---
 
-<form id="emailSignupForm" class="flex mb-6">
+<form 
+	id="emailSignupForm" 
+	action="https://api.web3forms.com/submit" 
+	method="POST" 
+	class="flex mb-6"
+>
+	<!-- REQUIRED: Web3Forms Access Key - Replace with your actual key -->
+	<input type="hidden" name="access_key" value="75f8b211-81aa-45c2-9c7b-c11f447d30a0">
+	
+	<!-- Optional: Customize email subject -->
+	<input type="hidden" name="subject" value="New Newsletter Subscription">
+	
+	<!-- Optional: Set from name -->
+	<input type="hidden" name="from_name" value="Company AI Prompts Newsletter">
+	
+	<!-- Optional: Prevent spam with honeypot -->
+	<input type="checkbox" name="botcheck" style="display: none;">
+
+	
 	<input 
 		type="email" 
 		id="emailInput"
@@ -21,52 +40,46 @@
 <div id="emailSignupResult" class="text-sm mt-2"></div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-	const form = document.getElementById('emailSignupForm');
-	const emailInput = document.getElementById('emailInput');
-	const resultDiv = document.getElementById('emailSignupResult');
+const form = document.getElementById('emailSignupForm');
+const result = document.getElementById('emailSignupResult');
 
-	if (!form || !emailInput || !resultDiv) {
-		console.error('Newsletter form elements not found');
-		return;
-	}
+form.addEventListener('submit', function(e) {
+	e.preventDefault();
+	const formData = new FormData(form);
+	const object = Object.fromEntries(formData);
+	const json = JSON.stringify(object);
+	result.innerHTML = "Please wait...";
+	result.className = 'text-sm text-blue-500 mt-2';
 
-	form.addEventListener('submit', async (e) => {
-		e.preventDefault();
-		
-		const email = (emailInput as HTMLInputElement).value.trim();
-		
-		// Basic email validation
-		if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-			resultDiv.textContent = 'Please enter a valid email address.';
-			resultDiv.className = 'text-sm text-red-500 mt-2';
-			return;
+	fetch('https://api.web3forms.com/submit', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Accept': 'application/json'
+		},
+		body: json
+	})
+	.then(async (response) => {
+		let json = await response.json();
+		if (response.status == 200) {
+			result.innerHTML = json.message;
+			result.className = 'text-sm text-green-500 mt-2';
+		} else {
+			console.log(response);
+			result.innerHTML = json.message;
+			result.className = 'text-sm text-red-500 mt-2';
 		}
-
-		try {
-			// Replace with your actual email signup endpoint
-			const response = await fetch('/api/newsletter-signup', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ email }),
-			});
-
-			const result = await response.json();
-
-			if (response.ok) {
-				resultDiv.textContent = 'Successfully subscribed!';
-				resultDiv.className = 'text-sm text-green-500 mt-2';
-				(emailInput as HTMLInputElement).value = ''; // Clear input
-			} else {
-				resultDiv.textContent = result.message || 'Signup failed. Please try again.';
-				resultDiv.className = 'text-sm text-red-500 mt-2';
-			}
-		} catch (error) {
-			resultDiv.textContent = 'An error occurred. Please try again.';
-			resultDiv.className = 'text-sm text-red-500 mt-2';
-		}
+	})
+	.catch(error => {
+		console.log(error);
+		result.innerHTML = "Something went wrong!";
+		result.className = 'text-sm text-red-500 mt-2';
+	})
+	.then(function() {
+		form.reset();
+		setTimeout(() => {
+			result.style.display = "none";
+		}, 5000);
 	});
 });
-</script> 
+</script>
