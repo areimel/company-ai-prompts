@@ -1,0 +1,72 @@
+---
+// FooterNewsletterForm.astro - Newsletter signup form component
+---
+
+<form id="emailSignupForm" class="flex mb-6">
+	<input 
+		type="email" 
+		id="emailInput"
+		name="email"
+		placeholder="Email Address" 
+		required
+		class="flex-grow px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+	/>
+	<button 
+		type="submit" 
+		class="bg-black text-white px-6 py-3 rounded-r-lg hover:bg-gray-800 transition-colors"
+	>
+		→
+	</button>
+</form>
+<div id="emailSignupResult" class="text-sm mt-2"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+	const form = document.getElementById('emailSignupForm');
+	const emailInput = document.getElementById('emailInput');
+	const resultDiv = document.getElementById('emailSignupResult');
+
+	if (!form || !emailInput || !resultDiv) {
+		console.error('Newsletter form elements not found');
+		return;
+	}
+
+	form.addEventListener('submit', async (e) => {
+		e.preventDefault();
+		
+		const email = (emailInput as HTMLInputElement).value.trim();
+		
+		// Basic email validation
+		if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+			resultDiv.textContent = 'Please enter a valid email address.';
+			resultDiv.className = 'text-sm text-red-500 mt-2';
+			return;
+		}
+
+		try {
+			// Replace with your actual email signup endpoint
+			const response = await fetch('/api/newsletter-signup', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ email }),
+			});
+
+			const result = await response.json();
+
+			if (response.ok) {
+				resultDiv.textContent = 'Successfully subscribed!';
+				resultDiv.className = 'text-sm text-green-500 mt-2';
+				(emailInput as HTMLInputElement).value = ''; // Clear input
+			} else {
+				resultDiv.textContent = result.message || 'Signup failed. Please try again.';
+				resultDiv.className = 'text-sm text-red-500 mt-2';
+			}
+		} catch (error) {
+			resultDiv.textContent = 'An error occurred. Please try again.';
+			resultDiv.className = 'text-sm text-red-500 mt-2';
+		}
+	});
+});
+</script> 
