@@ -1,11 +1,190 @@
 ---
 import branding from "@data/branding.json";
+import { Icon } from "astro-icon/components";
+
+const menuitems = [
+  {
+    title: "Prompts",
+    path: "/prompts",
+  },
+  {
+    title: "AI Personas",
+    path: "/ai-personas",
+  },
+  {
+    title: "Blog",
+    path: "/blog",
+  }
+];
+
+const legalLinks = [
+  {
+    title: "Privacy",
+    path: "/privacy"
+  },
+  {
+    title: "Terms & Conditions",
+    path: "/terms"
+  },
+  {
+    title: "California CCPA",
+    path: "/ccpa"
+  }
+];
+
+const socialLinks = [
+  {
+    name: "Facebook",
+    icon: "simple-icons:facebook",
+    url: branding.social.facebook?.url || "#"
+  },
+  {
+    name: "Instagram",
+    icon: "simple-icons:instagram",
+    url: branding.social.instagram?.url || "#"
+  },
+  {
+    name: "Twitter",
+    icon: "simple-icons:twitter",
+    url: branding.social.twitter.url
+  },
+  {
+    name: "Pinterest",
+    icon: "simple-icons:pinterest",
+    url: branding.social.pinterest?.url || "#"
+  }
+];
 ---
 
-<footer class="pb-20 pt-10 mt-10 border-t border-gray-200 dark:border-gray-700">
-  <p class="text-center text-sm text-slate-500 dark:text-slate-400">
-    Anti-Copyright © {new Date().getFullYear()} {branding.company.legalName}.
-    <br/>
-    No rights reserved. It's open-source, so uhhh... do whatever you want.
-  </p>
+<footer class="bg-white dark:bg-gray-900">
+  <div class="container mx-auto px-4 py-12 grid md:grid-cols-2 gap-12">
+    {/* Left Side */}
+    <div>
+      <h2 class="text-4xl font-bold mb-6 text-gray-900 dark:text-white">
+        We bake emails too. 
+        <br/>
+        Sign up to receive the latest news.
+      </h2>
+      
+      <form id="emailSignupForm" class="flex mb-6">
+        <input 
+          type="email" 
+          id="emailInput"
+          name="email"
+          placeholder="Email Address" 
+          required
+          class="flex-grow px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button 
+          type="submit" 
+          class="bg-black text-white px-6 py-3 rounded-r-lg hover:bg-gray-800 transition-colors"
+        >
+          →
+        </button>
+      </form>
+      <div id="emailSignupResult" class="text-sm mt-2"></div>
+
+      <div class="flex space-x-4">
+        {socialLinks.map((link) => (
+          <a 
+            href={link.url} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+          >
+            <Icon name={link.icon} class="w-6 h-6" />
+          </a>
+        ))}
+      </div>
+    </div>
+
+    {/* Right Side */}
+    <div class="grid grid-cols-2 gap-8">
+      <div>
+        <h3 class="font-semibold mb-4 text-gray-900 dark:text-white">Site</h3>
+        <ul class="space-y-2">
+          {menuitems.map((item) => (
+            <li>
+              <a 
+                href={item.path} 
+                class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+              >
+                {item.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-semibold mb-4 text-gray-900 dark:text-white">Legal</h3>
+        <ul class="space-y-2">
+          {legalLinks.map((item) => (
+            <li>
+              <a 
+                href={item.path} 
+                class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+              >
+                {item.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  {/* Full-Width Bottom Section */}
+  <div class="border-t border-gray-200 dark:border-gray-700 py-6 text-center">
+    <p class="text-sm text-slate-500 dark:text-slate-400">
+      Anti-Copyright © {new Date().getFullYear()} {branding.company.legalName}.
+      <br/>
+      No rights reserved. It's open-source, so uhhh... do whatever you want.
+    </p>
+  </div>
 </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('emailSignupForm');
+  const emailInput = document.getElementById('emailInput');
+  const resultDiv = document.getElementById('emailSignupResult');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = emailInput.value.trim();
+    
+    // Basic email validation
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      resultDiv.textContent = 'Please enter a valid email address.';
+      resultDiv.className = 'text-sm text-red-500 mt-2';
+      return;
+    }
+
+    try {
+      // Replace with your actual email signup endpoint
+      const response = await fetch('/api/newsletter-signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        resultDiv.textContent = 'Successfully subscribed!';
+        resultDiv.className = 'text-sm text-green-500 mt-2';
+        emailInput.value = ''; // Clear input
+      } else {
+        resultDiv.textContent = result.message || 'Signup failed. Please try again.';
+        resultDiv.className = 'text-sm text-red-500 mt-2';
+      }
+    } catch (error) {
+      resultDiv.textContent = 'An error occurred. Please try again.';
+      resultDiv.className = 'text-sm text-red-500 mt-2';
+    }
+  });
+});
+</script>
