@@ -57,10 +57,19 @@ const makeTitle = title
     />
   </head>
   <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-    <AnnouncementBanner />
-    <Navbar />
-    <slot />
-    <Footer />
+    <!-- Loading overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-gray-50 dark:bg-gray-900 z-50 flex items-center justify-center">
+      <div class="loading-spinner"></div>
+    </div>
+    
+    <!-- Main content -->
+    <div id="main-content" class="opacity-0 transition-opacity duration-500">
+      <AnnouncementBanner />
+      <Navbar />
+      <slot />
+      <Footer />
+    </div>
+
     <style is:global>
       /* Improve Page speed */
       /* https://css-tricks.com/almanac/properties/c/content-visibility/ */
@@ -77,12 +86,79 @@ const makeTitle = title
         background-color: rgb(17 24 39); /* matches dark:bg-gray-900 */
       }
 
+      /* Loading spinner animation */
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgb(209 213 219); /* gray-300 */
+        border-top: 4px solid rgb(59 130 246); /* blue-500 */
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      .dark .loading-spinner {
+        border: 4px solid rgb(75 85 99); /* gray-600 */
+        border-top: 4px solid rgb(96 165 250); /* blue-400 */
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
       /* Ensure transitions are disabled for users who prefer reduced motion */
       @media (prefers-reduced-motion: reduce) {
-        html, body {
+        html, body, #main-content {
           transition: none !important;
         }
+        .loading-spinner {
+          animation: none !important;
+        }
+      }
+
+      /* Font loading optimization */
+      body {
+        font-display: swap;
       }
     </style>
+
+    <script>
+      // Hide loading overlay and show content once fonts and DOM are ready
+      function initPageLoad() {
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const mainContent = document.getElementById('main-content');
+        
+        function showContent() {
+          if (loadingOverlay && mainContent) {
+            // Hide loading overlay
+            loadingOverlay.style.opacity = '0';
+            loadingOverlay.style.transition = 'opacity 300ms ease';
+            
+            // Show main content
+            mainContent.style.opacity = '1';
+            
+            // Remove loading overlay after transition
+            setTimeout(() => {
+              loadingOverlay.style.display = 'none';
+            }, 300);
+          }
+        }
+
+        // Wait for fonts to load before showing content
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(showContent);
+        } else {
+          // Fallback for browsers without Font Loading API
+          setTimeout(showContent, 100);
+        }
+      }
+
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initPageLoad);
+      } else {
+        initPageLoad();
+      }
+    </script>
   </body>
 </html>
