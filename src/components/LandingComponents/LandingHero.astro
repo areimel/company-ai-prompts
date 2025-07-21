@@ -1,0 +1,137 @@
+---
+import Link from "@components/ui/link.astro";
+import { Icon } from "astro-icon/components";
+
+export interface Props {
+  content: {
+    headline: string;
+    description: string;
+    buttons: {
+      primary: { text: string; href: string; icon: string };
+      secondary: { text: string; href: string; icon: string };
+    };
+    benefits: string[];
+    trustIndicators: {
+      title: string;
+      stats: { text: string; icon: string }[];
+    };
+    icons: {
+      brain: string;
+      floating: string[];
+      check: string;
+    };
+  };
+}
+
+const { content } = Astro.props;
+const { headline, description, buttons, benefits, trustIndicators, icons } = content;
+---
+
+<main
+  class="grid lg:grid-cols-2 place-items-center my-24">
+  <div class="py-6 md:order-1 hidden md:block">
+    <div class="flex items-center justify-center w-full h-full">
+      <div class="relative">
+        <!-- AI/Prompt Engineering Visual Element -->
+        <div class="w-96 h-96 relative">
+          <!-- Background gradient circle -->
+          <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-full opacity-10 dark:opacity-20"></div>
+          
+          <!-- Central AI icon -->
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-24 h-24 bg-black dark:bg-white rounded-2xl flex items-center justify-center shadow-2xl">
+              <Icon class="text-white dark:text-black w-12 h-12" name={icons.brain} />
+            </div>
+          </div>
+          
+          <!-- Floating prompt icons -->
+          <div class="absolute top-12 left-12 w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center shadow-lg">
+            <Icon class="text-gray-700 dark:text-gray-300 w-6 h-6" name={icons.floating[0]} />
+          </div>
+          
+          <div class="absolute top-16 right-16 w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center shadow-lg">
+            <Icon class="text-gray-700 dark:text-gray-300 w-6 h-6" name={icons.floating[1]} />
+          </div>
+          
+          <div class="absolute bottom-16 left-20 w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center shadow-lg">
+            <Icon class="text-gray-700 dark:text-gray-300 w-6 h-6" name={icons.floating[2]} />
+          </div>
+          
+          <div class="absolute bottom-12 right-12 w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center shadow-lg">
+            <Icon class="text-gray-700 dark:text-gray-300 w-6 h-6" name={icons.floating[3]} />
+          </div>
+          
+          <!-- Connecting lines -->
+          <svg class="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#e5e7eb;stop-opacity:0.3" />
+                <stop offset="100%" style="stop-color:#9ca3af;stop-opacity:0.6" />
+              </linearGradient>
+            </defs>
+            <line x1="192" y1="192" x2="72" y2="72" stroke="url(#lineGradient)" stroke-width="2" stroke-dasharray="5,5" />
+            <line x1="192" y1="192" x2="320" y2="80" stroke="url(#lineGradient)" stroke-width="2" stroke-dasharray="5,5" />
+            <line x1="192" y1="192" x2="104" y2="320" stroke="url(#lineGradient)" stroke-width="2" stroke-dasharray="5,5" />
+            <line x1="192" y1="192" x2="320" y2="312" stroke="url(#lineGradient)" stroke-width="2" stroke-dasharray="5,5" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div>
+    <h1
+      class="text-5xl lg:text-6xl xl:text-7xl font-bold lg:tracking-tight xl:tracking-tighter">
+      {headline}
+    </h1>
+    <p class="text-lg mt-4 text-slate-600 dark:text-slate-400 max-w-xl">
+      {description}
+    </p>
+    
+    <!-- Key benefits -->
+    <div class="mt-6 flex flex-wrap gap-4 text-sm text-slate-500 dark:text-slate-400">
+      {benefits.map((benefit) => (
+        <div class="flex items-center gap-2">
+          <Icon class="w-4 h-4 text-green-600" name={icons.check} />
+          <span>{benefit}</span>
+        </div>
+      ))}
+    </div>
+    
+    <div class="mt-8 flex flex-col sm:flex-row gap-3">
+      <Link
+        href={buttons.primary.href}
+        size="lg"
+        style="primary"
+        class="flex gap-2 items-center justify-center"
+        rel="noopener">
+        <Icon class="text-white w-5 h-5" name={buttons.primary.icon} />
+        {buttons.primary.text}
+      </Link>
+      <Link
+        size="lg"
+        style="outline"
+        rel="noopener"
+        href={buttons.secondary.href}
+        class="flex gap-2 items-center justify-center">
+        <Icon class="text-black dark:text-white w-4 h-4" name={buttons.secondary.icon} />
+        {buttons.secondary.text}
+      </Link>
+    </div>
+    
+    <!-- Trust indicators -->
+    <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+      <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide font-medium mb-3">
+        {trustIndicators.title}
+      </p>
+      <div class="flex items-center gap-6 text-slate-400 dark:text-slate-500">
+        {trustIndicators.stats.map((stat) => (
+          <div class="flex items-center gap-2">
+            <Icon class="w-4 h-4" name={stat.icon} />
+            <span class="text-sm">{stat.text}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</main>

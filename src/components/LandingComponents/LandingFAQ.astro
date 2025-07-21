@@ -1,0 +1,132 @@
+---
+import Sectionhead from "@components/sectionhead.astro";
+import { Icon } from "astro-icon/components";
+
+export interface Props {
+  content: {
+    header: {
+      title: string;
+      description: string;
+    };
+    items: {
+      id: string;
+      question: string;
+      answer: string;
+    }[];
+    chevronIcon: string;
+  };
+}
+
+const { content } = Astro.props;
+const { header, items, chevronIcon } = content;
+---
+
+<div class="bg-white dark:bg-gray-900 my-24 py-12 border border-gray-200 dark:border-gray-700 rounded-lg">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <Sectionhead align="center">
+      <Fragment slot="title">{header.title}</Fragment>
+      <Fragment slot="desc">{header.description}</Fragment>
+    </Sectionhead>
+    
+    <div class="mt-16 space-y-4">
+      {items.map((faq) => (
+        <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+          <button 
+            class="w-full px-6 py-4 text-left bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:ring-inset"
+            onclick={`toggleFAQ('${faq.id}')`}
+            aria-expanded="false"
+            aria-controls={`${faq.id}-content`}
+          >
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white pr-4">
+              {faq.question}
+            </h3>
+            <div class="faq-icon transform transition-transform duration-200">
+              <Icon name={chevronIcon} class="w-6 h-6 text-gray-500 dark:text-gray-400" />
+            </div>
+          </button>
+          
+          <div 
+            id={`${faq.id}-content`}
+            class="faq-content overflow-hidden transition-all duration-300 ease-in-out max-h-0"
+            aria-hidden="true"
+          >
+            <div class="px-6 py-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+              <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+                {faq.answer}
+              </p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  function toggleFAQ(id) {
+    const content = document.getElementById(`${id}-content`);
+    const button = content.previousElementSibling;
+    const icon = button.querySelector('.faq-icon');
+    const isExpanded = button.getAttribute('aria-expanded') === 'true';
+    
+    // Close all other FAQs
+    document.querySelectorAll('.faq-content').forEach(item => {
+      if (item !== content) {
+        item.style.maxHeight = '0px';
+        item.setAttribute('aria-hidden', 'true');
+        const otherButton = item.previousElementSibling;
+        const otherIcon = otherButton.querySelector('.faq-icon');
+        otherButton.setAttribute('aria-expanded', 'false');
+        otherIcon.style.transform = 'rotate(0deg)';
+      }
+    });
+    
+    if (isExpanded) {
+      // Close this FAQ
+      content.style.maxHeight = '0px';
+      content.setAttribute('aria-hidden', 'true');
+      button.setAttribute('aria-expanded', 'false');
+      icon.style.transform = 'rotate(0deg)';
+    } else {
+      // Open this FAQ
+      content.style.maxHeight = content.scrollHeight + 'px';
+      content.setAttribute('aria-hidden', 'false');
+      button.setAttribute('aria-expanded', 'true');
+      icon.style.transform = 'rotate(180deg)';
+    }
+  }
+  
+  // Keyboard navigation support
+  document.addEventListener('keydown', function(e) {
+    if (e.target.matches('.faq-content button')) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        e.target.click();
+      }
+    }
+  });
+</script>
+
+<style>
+  .faq-content {
+    transition: max-height 0.3s ease-in-out;
+  }
+  
+  .faq-icon {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  /* Ensure proper contrast for focus states */
+  button:focus {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+  
+  /* Smooth animations */
+  @media (prefers-reduced-motion: reduce) {
+    .faq-content,
+    .faq-icon {
+      transition: none;
+    }
+  }
+</style>

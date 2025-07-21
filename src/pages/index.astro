@@ -1,20 +1,37 @@
 ---
-import { getCollection } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import Container from "@components/container.astro";
-import HomeHeaderSection from "@components/ContentComponents/HomeHeaderSection.astro";
-import SearchFilter from "@components/PromptComponents/SearchFilter.astro";
-import PromptGrid from "@components/PromptComponents/PromptGrid.astro";
-import PromptDirectoryGroup from "@components/PromptComponents/PromptDirectoryGroup.astro";
-
+import LandingHero from "@components/LandingComponents/LandingHero.astro";
+import LandingFeatures from "@components/LandingComponents/LandingFeatures.astro";
+import LandingCTA from "@components/LandingComponents/LandingCTA.astro";
+import LandingFAQ from "@components/LandingComponents/LandingFAQ.astro";
+import LandingContact from "@components/LandingComponents/LandingContact.astro";
+import homeContent from "@data/homeContent.json";
 ---
 
-<Layout title="AI Prompt Directory">
-  <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-    <HomeHeaderSection />
-
+<Layout title="AI Prompt Directory - Discover, Share & Master AI Prompts">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <!-- Hero Section -->
     <Container>
-      <PromptDirectoryGroup />
+      <LandingHero content={homeContent.hero} />
     </Container>
+
+    <!-- Features Section -->
+    <Container>
+      <LandingFeatures content={homeContent.features} />
+    </Container>
+
+    <!-- Call to Action Section -->
+    <Container>
+      <LandingCTA content={homeContent.cta} />
+    </Container>
+
+    <!-- FAQ Section -->
+    <Container>
+      <LandingFAQ content={homeContent.faq} />
+    </Container>
+
+    <!-- Contact Section -->
+    <LandingContact content={homeContent.contact} />
   </div>
 </Layout>

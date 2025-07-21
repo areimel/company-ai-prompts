@@ -1,0 +1,44 @@
+---
+import { Icon } from "astro-icon/components";
+import Sectionhead from "../sectionhead.astro";
+
+export interface Props {
+  content: {
+    header: {
+      title: string;
+      description: string;
+    };
+    items: {
+      title: string;
+      description: string;
+      icon: string;
+    }[];
+  };
+}
+
+const { content } = Astro.props;
+const { header, items } = content;
+---
+
+<div class="my-24">
+  <Sectionhead>
+    <Fragment slot="title">{header.title}</Fragment>
+    <Fragment slot="desc">{header.description}</Fragment>
+  </Sectionhead>
+
+  <div class="grid sm:grid-cols-2 md:grid-cols-3 mt-16 gap-16">
+    {
+      items.map((item) => (
+        <div class="flex gap-4 items-start">
+          <div class="mt-1 bg-black rounded-full p-2 w-8 h-8 shrink-0">
+            <Icon class="text-white" name={item.icon} />
+          </div>
+          <div>
+            <h3 class="font-semibold text-lg">{item.title}</h3>
+            <p class="text-slate-500 mt-2 leading-relaxed">{item.description}</p>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</div>
