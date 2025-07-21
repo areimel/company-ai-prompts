@@ -9,9 +9,13 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
     "img-compress": "optimizt public/*.jpg public/*.jpeg public/*.png"
   },
   "dependencies": {
+    "@ai-sdk/google": "^1.2.22",
     "@astrojs/mdx": "^4.2.6",
     "@astrojs/netlify": "^6.3.3",
     "@astrojs/sitemap": "^3.4.0",
@@ -23,6 +27,7 @@
     "@iconify-json/simple-icons": "^1.1.102",
     "@iconify-json/uil": "^1.1.8",
     "@tailwindcss/typography": "^0.5.13",
+    "ai": "^4.3.19",
     "astro": "^5.7.13",
     "astro-icon": "^1.1.0",
     "astro-navbar": "^2.3.2",
@@ -31,6 +36,7 @@
     "tailwindcss": "^3.4.3"
   },
   "devDependencies": {
-    "@iconify-icons/simple-icons": "^1.2.74"
+    "@iconify-icons/simple-icons": "^1.2.74",
+    "vitest": "^3.2.4"
   }
 }

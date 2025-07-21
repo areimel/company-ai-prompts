@@ -4,7 +4,13 @@
       "Bash(mkdir:*)",
       "Bash(test:*)",
       "Bash(npm run dev:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(ls:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm test:*)",
+      "Bash(npx vitest run:*)",
+      "Bash(pnpm build:*)",
+      "Bash(npx astro:*)"
     ],
     "deny": []
   }

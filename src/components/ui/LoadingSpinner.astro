@@ -1,0 +1,38 @@
+---
+interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+}
+
+const { size = 'md', class: className } = Astro.props;
+
+const sizeClasses = {
+  sm: 'h-4 w-4',
+  md: 'h-6 w-6', 
+  lg: 'h-8 w-8'
+};
+---
+
+<svg 
+  class:list={[
+    'animate-spin',
+    sizeClasses[size],
+    className
+  ]} 
+  fill="none" 
+  viewBox="0 0 24 24"
+>
+  <circle 
+    class="opacity-25" 
+    cx="12" 
+    cy="12" 
+    r="10" 
+    stroke="currentColor" 
+    stroke-width="4"
+  ></circle>
+  <path 
+    class="opacity-75" 
+    fill="currentColor" 
+    d="m15.5 12.5a3.5 3.5 0 11-7 0 3.5 3.5 0 017 0z"
+  ></path>
+</svg>
