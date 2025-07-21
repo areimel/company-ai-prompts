@@ -59,6 +59,10 @@ importers:
       tailwindcss:
         specifier: ^3.4.3
         version: 3.4.17
+    devDependencies:
+      '@iconify-icons/simple-icons':
+        specifier: ^1.2.74
+        version: 1.2.74
 
 packages:
 
@@ -369,6 +373,9 @@ packages:
   '@google/genai@0.14.1':
     resolution: {integrity: sha512-BZ93j4XcvsLEX5RkYE1RqrXLpuzEuH5VGY0geRrHjfpLP3ijDepGePg/iJ7kMSPOTXFYNMeTruNyoTB6TXXgnA==}
     engines: {node: '>=18.0.0'}
+
+  '@iconify-icons/simple-icons@1.2.74':
+    resolution: {integrity: sha512-FWmuSbg+KDUreysuaE8DYu/jbv4+FtSY+ppAi8w8sgX9CKTP6watB+PLeMbklOL/G5PnBlHnvM/ihkZ+n96OZw==}
 
   '@iconify-json/bx@1.2.2':
     resolution: {integrity: sha512-hZVx6LMEkYckScdRdUuQWcmv8Lm2au6Cnf799TLoR6YgiAfFvaJ4M5ElwcnExvCu8ntsS7jW89r0W5LwBAfZXQ==}
@@ -3987,6 +3994,10 @@ snapshots:
       - encoding
       - supports-color
       - utf-8-validate
+
+  '@iconify-icons/simple-icons@1.2.74':
+    dependencies:
+      '@iconify/types': 2.0.0
 
   '@iconify-json/bx@1.2.2':
     dependencies:

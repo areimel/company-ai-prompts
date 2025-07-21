@@ -1,0 +1,67 @@
+---
+import Sectionhead from "../sectionhead.astro";
+import ContactForm from "../contactform.astro";
+import Container from "../container.astro";
+
+export interface Props {
+  content: {
+    header: {
+      title: string;
+      description: string;
+    };
+    content: {
+      subtitle: string;
+      description: string;
+      features: string[];
+    };
+  };
+}
+
+const { content } = Astro.props;
+const { header, content: contactContent } = content;
+---
+
+<Container class="my-24">
+  <Sectionhead>
+    <Fragment slot="title">{header.title}</Fragment>
+    <Fragment slot="desc">{header.description}</Fragment>
+  </Sectionhead>
+  
+  <div class="grid md:grid-cols-2 gap-10 mx-auto max-w-4xl mt-16">
+    <div class="flex flex-col justify-center">
+      <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+        {contactContent.subtitle}
+      </h3>
+      <p class="text-lg text-gray-600 dark:text-gray-400 mb-6">
+        {contactContent.description}
+      </p>
+      <div class="space-y-4">
+        {contactContent.features.map((feature, index) => {
+          const svgIcons = [
+            // Email icon
+            `<path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>`,
+            // Info icon  
+            `<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>`,
+            // Lock icon
+            `<path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>`
+          ];
+          
+          return (
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 bg-black dark:bg-white rounded-full flex items-center justify-center shrink-0">
+                <svg class="w-3 h-3 text-white dark:text-black" fill="currentColor" viewBox="0 0 20 20">
+                  <Fragment set:html={svgIcons[index]} />
+                </svg>
+              </div>
+              <span class="text-gray-600 dark:text-gray-400">{feature}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+    
+    <div class="bg-gray-50 dark:bg-gray-900 p-8 rounded-lg">
+      <ContactForm />
+    </div>
+  </div>
+</Container>

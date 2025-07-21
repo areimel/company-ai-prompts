@@ -1,0 +1,155 @@
+{
+  "hero": {
+    "headline": "Master AI Prompt Engineering",
+    "description": "Discover, share, and master powerful AI prompts that unlock your team's potential. From beginner templates to advanced techniques, find the perfect prompts for every AI application.",
+    "buttons": {
+      "primary": {
+        "text": "Browse Prompts",
+        "href": "/prompts",
+        "icon": "bx:bxs-collection"
+      },
+      "secondary": {
+        "text": "Explore AI Personas",
+        "href": "/ai-personas",
+        "icon": "bx:bx-user-circle"
+      }
+    },
+    "benefits": [
+      "Curated prompt library",
+      "Team collaboration",
+      "Proven techniques"
+    ],
+    "trustIndicators": {
+      "title": "Trusted by teams worldwide",
+      "stats": [
+        {
+          "text": "500+ Prompts",
+          "icon": "bx:bx-trending-up"
+        },
+        {
+          "text": "Growing Community",
+          "icon": "bx:bx-group"
+        },
+        {
+          "text": "Always Updated",
+          "icon": "bx:bx-time-five"
+        }
+      ]
+    },
+    "icons": {
+      "brain": "bx:bxs-brain",
+      "floating": [
+        "bx:bx-code-alt",
+        "bx:bx-edit-alt",
+        "bx:bx-rocket",
+        "bx:bx-bulb"
+      ],
+      "check": "bx:bx-check"
+    }
+  },
+  "features": {
+    "header": {
+      "title": "Everything you need for AI prompting",
+      "description": "Our directory comes with powerful features to help you find, share, and improve your AI prompts."
+    },
+    "items": [
+      {
+        "title": "Discover Effective Prompts",
+        "description": "Find proven prompts for various AI tasks, tested and refined by the community for maximum effectiveness.",
+        "icon": "bx:bxs-search"
+      },
+      {
+        "title": "Share Your Expertise",
+        "description": "Contribute and share your successful prompts with the community to help others achieve better AI results.",
+        "icon": "bx:bxs-share"
+      },
+      {
+        "title": "Organized by Category",
+        "description": "Easy browsing by use case and application. Find exactly what you need with our intuitive categorization system.",
+        "icon": "bx:bxs-category"
+      },
+      {
+        "title": "Copy & Use Instantly",
+        "description": "Ready-to-use prompts for immediate implementation. No complex setup required - just copy and paste.",
+        "icon": "bx:bxs-copy"
+      },
+      {
+        "title": "Community Driven",
+        "description": "Built by and for AI prompt engineers. Join a growing community of practitioners sharing knowledge.",
+        "icon": "bx:bxs-group"
+      },
+      {
+        "title": "Always Updated",
+        "description": "Fresh prompts added regularly. Stay current with the latest techniques and best practices in AI prompting.",
+        "icon": "bx:bx-refresh"
+      }
+    ]
+  },
+  "cta": {
+    "headline": "Start Building Better AI Prompts Today",
+    "description": "Discover our curated collection of proven AI prompts and transform the way you interact with artificial intelligence. From creative writing to business automation, find the perfect prompt for your needs.",
+    "button": {
+      "text": "Explore Prompts",
+      "href": "/prompts"
+    }
+  },
+  "faq": {
+    "header": {
+      "title": "Frequently Asked Questions",
+      "description": "Everything you need to know about our AI prompt directory and how to make the most of it."
+    },
+    "items": [
+      {
+        "id": "faq-1",
+        "question": "What is an AI prompt directory?",
+        "answer": "An AI prompt directory is a curated collection of effective prompts designed to help you get better results from AI models. Our directory contains tested prompts for various use cases including writing, coding, analysis, creative tasks, and business applications. Each prompt is optimized to produce high-quality, consistent outputs from AI systems."
+      },
+      {
+        "id": "faq-2",
+        "question": "How do I use these prompts?",
+        "answer": "Simply copy any prompt from our directory and paste it into your preferred AI tool (ChatGPT, Claude, Gemini, etc.). You can customize the prompts by replacing placeholder text with your specific requirements. For best results, read the prompt description and any usage notes provided with each template."
+      },
+      {
+        "id": "faq-3",
+        "question": "Can I contribute my own prompts?",
+        "answer": "Yes! We welcome contributions from the community. You can submit your own tested prompts through our contribution form. All submissions are reviewed for quality and effectiveness before being added to the directory. We particularly value prompts that solve unique problems or improve upon existing solutions."
+      },
+      {
+        "id": "faq-4",
+        "question": "Are the prompts free to use?",
+        "answer": "Absolutely! All prompts in our directory are free to use for personal and commercial purposes. We believe in making AI more accessible to everyone. You can use, modify, and share these prompts without any restrictions. Attribution is appreciated but not required."
+      },
+      {
+        "id": "faq-5",
+        "question": "What AI models work with these prompts?",
+        "answer": "Our prompts are designed to work with most modern AI language models including OpenAI's GPT series, Anthropic's Claude, Google's Gemini, and other compatible models. While some prompts may work better with specific models, most are crafted to be model-agnostic and deliver good results across different platforms."
+      },
+      {
+        "id": "faq-6",
+        "question": "How often are new prompts added?",
+        "answer": "We add new prompts regularly, typically several times per week. Our team continuously tests and curates new prompts based on community submissions, emerging AI capabilities, and popular use cases. Follow our blog or subscribe to our newsletter to stay updated on the latest additions."
+      },
+      {
+        "id": "faq-7",
+        "question": "Can I request specific types of prompts?",
+        "answer": "Yes! We encourage prompt requests from our community. You can submit requests through our contact form or suggest new categories and use cases. While we can't guarantee every request will be fulfilled, we prioritize prompts that would benefit many users and align with our quality standards."
+      }
+    ],
+    "chevronIcon": "bx:bx-chevron-down"
+  },
+  "contact": {
+    "header": {
+      "title": "Get In Touch",
+      "description": "Have questions about our AI prompts? Need help with implementation? We'd love to hear from you and help you succeed with AI."
+    },
+    "content": {
+      "subtitle": "Let's Start a Conversation",
+      "description": "Whether you're looking for specific AI prompts, have feedback on our collection, or want to collaborate, we're here to help. Send us a message and we'll get back to you within 24 hours.",
+      "features": [
+        "Quick response within 24 hours",
+        "Detailed and helpful responses",
+        "Your information stays private"
+      ]
+    }
+  }
+}

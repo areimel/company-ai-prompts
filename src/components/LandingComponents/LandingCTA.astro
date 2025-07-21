@@ -1,0 +1,30 @@
+---
+import Link from "@components/ui/link.astro";
+
+export interface Props {
+  content: {
+    headline: string;
+    description: string;
+    button: {
+      text: string;
+      href: string;
+    };
+  };
+}
+
+const { content } = Astro.props;
+const { headline, description, button } = content;
+---
+
+<div
+  class="bg-black p-8 md:px-20 md:py-20 my-24 mx-auto max-w-5xl rounded-lg flex flex-col items-center text-center">
+  <h2 class="text-white text-4xl md:text-6xl tracking-tight text-balance">
+    {headline}
+  </h2>
+  <p class="text-slate-400 mt-4 text-lg md:text-xl text-balance">
+    {description}
+  </p>
+  <div class="flex mt-5">
+    <Link href={button.href} style="inverted">{button.text}</Link>
+  </div>
+</div>

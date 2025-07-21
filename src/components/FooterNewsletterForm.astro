@@ -1,0 +1,85 @@
+---
+// FooterNewsletterForm.astro - Newsletter signup form component
+// Uses Web3Forms for form submission handling
+---
+
+<form 
+	id="emailSignupForm" 
+	action="https://api.web3forms.com/submit" 
+	method="POST" 
+	class="flex mb-6"
+>
+	<!-- REQUIRED: Web3Forms Access Key - Replace with your actual key -->
+	<input type="hidden" name="access_key" value="75f8b211-81aa-45c2-9c7b-c11f447d30a0">
+	
+	<!-- Optional: Customize email subject -->
+	<input type="hidden" name="subject" value="New Newsletter Subscription">
+	
+	<!-- Optional: Set from name -->
+	<input type="hidden" name="from_name" value="Company AI Prompts Newsletter">
+	
+	<!-- Optional: Prevent spam with honeypot -->
+	<input type="checkbox" name="botcheck" style="display: none;">
+
+	
+	<input 
+		type="email" 
+		id="emailInput"
+		name="email"
+		placeholder="Email Address" 
+		required
+		class="flex-grow px-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+	/>
+	<button 
+		type="submit" 
+		class="bg-black text-white px-6 py-3 rounded-r-lg hover:bg-gray-800 transition-colors"
+	>
+		→
+	</button>
+</form>
+<div id="emailSignupResult" class="text-sm mt-2"></div>
+
+<script>
+const form = document.getElementById('emailSignupForm');
+const result = document.getElementById('emailSignupResult');
+
+form.addEventListener('submit', function(e) {
+	e.preventDefault();
+	const formData = new FormData(form);
+	const object = Object.fromEntries(formData);
+	const json = JSON.stringify(object);
+	result.innerHTML = "Please wait...";
+	result.className = 'text-sm text-blue-500 mt-2';
+
+	fetch('https://api.web3forms.com/submit', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Accept': 'application/json'
+		},
+		body: json
+	})
+	.then(async (response) => {
+		let json = await response.json();
+		if (response.status == 200) {
+			result.innerHTML = json.message;
+			result.className = 'text-sm text-green-500 mt-2';
+		} else {
+			console.log(response);
+			result.innerHTML = json.message;
+			result.className = 'text-sm text-red-500 mt-2';
+		}
+	})
+	.catch(error => {
+		console.log(error);
+		result.innerHTML = "Something went wrong!";
+		result.className = 'text-sm text-red-500 mt-2';
+	})
+	.then(function() {
+		form.reset();
+		setTimeout(() => {
+			result.style.display = "none";
+		}, 5000);
+	});
+});
+</script>

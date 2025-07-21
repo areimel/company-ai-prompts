@@ -22,10 +22,37 @@
       }
     }
   },
+  "footer": {
+    "newsletter": {
+      "title": "We're building cool things every day.",
+      "subtitle": "Sign up to receive the latest news."
+    },
+    "social": {
+      "enabled": ["twitter", "facebook", "instagram", "pinterest"],
+      "icons": {
+        "twitter": "simple-icons:twitter",
+        "facebook": "simple-icons:facebook",
+        "instagram": "simple-icons:instagram",
+        "pinterest": "simple-icons:pinterest"
+      }
+    }
+  },
   "social": {
     "twitter": {
       "handle": "@alecreimel",
       "url": "https://twitter.com/alecreimel"
+    },
+    "facebook": {
+      "handle": "alecreimel",
+      "url": "https://facebook.com/alecreimel"
+    },
+    "instagram": {
+      "handle": "@alecreimel",
+      "url": "https://instagram.com/alecreimel"
+    },
+    "pinterest": {
+      "handle": "alecreimel",
+      "url": "https://pinterest.com/alecreimel"
     }
   },
   "seo": {

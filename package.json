@@ -8,7 +8,7 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro", 
+    "astro": "astro",
     "img-compress": "optimizt public/*.jpg public/*.jpeg public/*.png"
   },
   "dependencies": {
@@ -29,5 +29,8 @@
     "astro-seo": "^0.8.3",
     "sharp": "^0.33.5",
     "tailwindcss": "^3.4.3"
+  },
+  "devDependencies": {
+    "@iconify-icons/simple-icons": "^1.2.74"
   }
 }
