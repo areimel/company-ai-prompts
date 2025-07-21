@@ -1,0 +1,37 @@
+---
+interface Props {
+  currentCount?: number;
+  maxCount?: number;
+  id?: string;
+  class?: string;
+}
+
+const { 
+  currentCount = 0, 
+  maxCount = 5000, 
+  id = 'text-counter',
+  class: className 
+} = Astro.props;
+
+// Determine color based on count
+let counterClass = 'text-gray-600 dark:text-gray-300';
+if (currentCount > maxCount * 0.9) {
+  counterClass = 'text-red-600 dark:text-red-400';
+} else if (currentCount > maxCount * 0.8) {
+  counterClass = 'text-yellow-600 dark:text-yellow-400';
+}
+---
+
+<div 
+  class:list={[
+    'bg-gray-100 dark:bg-gray-600 text-xs px-2 py-1 rounded-full transition-colors',
+    className
+  ]}
+>
+  <span 
+    id={id}
+    class:list={[counterClass]}
+  >
+    {currentCount}/{maxCount}
+  </span>
+</div>

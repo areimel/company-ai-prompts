@@ -1,0 +1,27 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  templateType: string;
+  class?: string;
+}
+
+const { title, description, templateType, class: className } = Astro.props;
+---
+
+<button 
+  class:list={[
+    'template-btn text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600', 
+    'hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-blue-300 dark:hover:border-blue-600', 
+    'transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-blue-500',
+    className
+  ]}
+  data-template-type={templateType}
+>
+  <div class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">
+    {title}
+  </div>
+  <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
+    {description}
+  </div>
+</button>

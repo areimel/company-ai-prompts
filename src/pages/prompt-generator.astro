@@ -12,118 +12,417 @@ import PromptDirectoryGroup from "@components/PromptComponents/PromptDirectoryGr
 
 // Define the system instruction for the AI
 const systemInstruction = "You are a helpful AI assistant that generates creative and useful prompts.";
-const apiKey = "AIzaSyAiN-ESjJzTi8uozCH35livfVSFppCvYCE";
+// API key now handled securely on the server-side
 ---
 
 <Layout title="AI Prompt Generator">
-  <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-    
-    <section>
-      <Container>
-        <h1>AI Prompt Generator</h1>
-        <p>
-          Generate prompts for your AI projects with ease.
-        </p>
-
-        <!-- Use a native form with POST method -->
-        <form 
-          id="prompt-form" 
-          class="mt-6" 
-          method="post"
-          action="/api/generate-simple" 
-          enctype="application/x-www-form-urlencoded"
-        >
-          <textarea 
-            name="prompt" 
-            id="prompt" 
-            placeholder="Enter your prompt here"
-            class="w-full p-4 border rounded-md dark:bg-gray-800 dark:border-gray-700"
-            rows="5"
-          ></textarea>
-          
-          <button 
-            type="submit" 
-            id="generate-button"
-            class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            Generate
-          </button>
-        </form>
-        
-        <div class="mt-8 p-4 border rounded-md bg-white dark:bg-gray-800 dark:border-gray-700">
-          <p class="font-medium mb-2">Generated Prompt:</p>
-          <p id="generated-prompt" class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-            Your generated prompt will appear here...
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <Container>
+      <div class="py-8 max-w-4xl mx-auto">
+        <!-- Header Section -->
+        <div class="text-center mb-8">
+          <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            AI Prompt Generator
+          </h1>
+          <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Transform your ideas into powerful AI prompts. Describe what you need and let our AI create the perfect prompt for your project.
           </p>
         </div>
-      </Container>
-    </section>
 
+        <!-- Main Interface -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Input Section -->
+          <div class="space-y-6">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                Describe Your Prompt
+              </h2>
+              
+              <form id="prompt-form" class="space-y-4">
+                <div class="relative">
+                  <textarea 
+                    name="prompt" 
+                    id="prompt" 
+                    placeholder="Example: Create a prompt that helps me write engaging social media posts for a tech startup..."
+                    class="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y transition-colors"
+                    rows="6"
+                    maxlength="5000"
+                    required
+                  ></textarea>
+                  
+                  <!-- Character Counter -->
+                  <div class="absolute bottom-3 right-3 bg-gray-100 dark:bg-gray-600 text-xs px-2 py-1 rounded-full">
+                    <span id="char-count" class="text-gray-600 dark:text-gray-300">0/5000</span>
+                  </div>
+                </div>
+                
+                <!-- Validation Message -->
+                <div id="validation-message" class="text-red-500 dark:text-red-400 text-sm hidden"></div>
+                
+                <!-- Generate Button -->
+                <button 
+                  type="submit" 
+                  id="generate-button"
+                  class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span id="button-text">Generate Prompt</span>
+                  <span id="loading-spinner" class="hidden">
+                    <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="m15.5 12.5a3.5 3.5 0 11-7 0 3.5 3.5 0 017 0z"></path>
+                    </svg>
+                  </span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Quick Templates -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Quick Templates
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button class="template-btn text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <div class="text-sm font-medium text-gray-900 dark:text-white">Creative Writing</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">For stories, blogs, and creative content</div>
+                </button>
+                <button class="template-btn text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <div class="text-sm font-medium text-gray-900 dark:text-white">Business Strategy</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">For business plans and analysis</div>
+                </button>
+                <button class="template-btn text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <div class="text-sm font-medium text-gray-900 dark:text-white">Code Generation</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">For programming and development</div>
+                </button>
+                <button class="template-btn text-left p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  <div class="text-sm font-medium text-gray-900 dark:text-white">Educational</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">For learning and teaching</div>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Output Section -->
+          <div class="space-y-6">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+                  Generated Prompt
+                </h2>
+                <button 
+                  id="copy-button"
+                  class="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors hidden"
+                >
+                  Copy to Clipboard
+                </button>
+              </div>
+              
+              <div id="output-container" class="min-h-[200px] bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                <div id="empty-state" class="flex flex-col items-center justify-center h-full text-center py-12">
+                  <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                  </div>
+                  <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400 mb-2">No prompt generated yet</h3>
+                  <p class="text-sm text-gray-400 dark:text-gray-500">Enter your description above and click "Generate Prompt" to get started</p>
+                </div>
+                
+                <div id="loading-state" class="hidden flex flex-col items-center justify-center h-full text-center py-12">
+                  <div class="w-8 h-8 mb-4">
+                    <svg class="animate-spin w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="m15.5 12.5a3.5 3.5 0 11-7 0 3.5 3.5 0 017 0z"></path>
+                    </svg>
+                  </div>
+                  <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">Generating your prompt...</h3>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Please wait while our AI creates the perfect prompt for you</p>
+                </div>
+                
+                <div id="generated-prompt" class="hidden">
+                  <pre class="whitespace-pre-wrap font-mono text-sm text-gray-800 dark:text-gray-200 leading-relaxed"></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Container>
   </div>
 </Layout>
 
 <script>
+  import { generatePrompt, generatePromptByType, streamPromptGeneration, PROMPT_TYPES } from '../lib/ai-service';
+  
   document.addEventListener("DOMContentLoaded", function() {
+    // Get DOM elements
     const form = document.getElementById("prompt-form");
     const promptField = document.getElementById("prompt");
-    const resultElement = document.getElementById("generated-prompt");
+    const generateButton = document.getElementById("generate-button");
+    const buttonText = document.getElementById("button-text");
+    const loadingSpinner = document.getElementById("loading-spinner");
+    const charCount = document.getElementById("char-count");
+    const validationMessage = document.getElementById("validation-message");
+    const copyButton = document.getElementById("copy-button");
     
-    if (form && promptField && resultElement) {
-      // Override the form's submission
+    // State elements
+    const emptyState = document.getElementById("empty-state");
+    const loadingState = document.getElementById("loading-state");
+    const generatedPrompt = document.getElementById("generated-prompt");
+    
+    // Template buttons
+    const templateButtons = document.querySelectorAll('.template-btn');
+    
+    // Template prompts
+    const templates = {
+      creative: "Create a prompt that helps me write engaging and creative content for [specify type: blog posts, stories, social media, etc.]. The content should be [tone/style] and target [audience]. Include specific guidelines for structure, tone, and key elements to include.",
+      business: "Generate a comprehensive business prompt for [specific business task: market analysis, strategy planning, competitive analysis, etc.]. Focus on [industry/sector] and consider [specific constraints or objectives]. Provide a structured approach with clear deliverables.",
+      code: "Create a detailed coding prompt for [programming language/framework] that helps me [specific development task]. Include requirements for code structure, best practices, error handling, and documentation. Target [experience level] and focus on [specific features or functionality].",
+      educational: "Design an educational prompt for [subject/topic] suitable for [target audience/grade level]. Include learning objectives, key concepts to cover, interactive elements, and assessment methods. Make it engaging and pedagogically sound."
+    };
+    
+    if (form && promptField) {
+      // Form submission handler
       form.addEventListener("submit", async function(event) {
-        // Prevent default form submission
         event.preventDefault();
         
         try {
-          // Show loading state
-          resultElement.textContent = "Generating...";
+          const promptText = promptField.value.trim();
           
-          // Get form data directly
-          const formData = new FormData(form);
-          const promptText = formData.get("prompt")?.toString() || "";
-          
-          console.log("Prompt text from FormData:", promptText);
-          console.log("Prompt length:", promptText.length);
-          
-          if (!promptText || promptText.trim() === "") {
-            resultElement.textContent = "Please enter a prompt.";
+          // Client-side validation
+          if (!promptText) {
+            showValidationMessage("Please enter a prompt description.");
             return;
           }
           
-          // Create URLSearchParams from FormData
-          const urlSearchParams = new URLSearchParams();
-          for (const [key, value] of formData.entries()) {
-            urlSearchParams.append(key, value.toString());
+          if (promptText.length < 10) {
+            showValidationMessage("Prompt description must be at least 10 characters long.");
+            return;
           }
           
-          console.log("Form data as URLSearchParams:", urlSearchParams.toString());
-          
-          // Make the request
-          const response = await fetch("/api/generate-simple", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: urlSearchParams.toString()
-          });
-          
-          console.log("Response status:", response.status);
-          
-          if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Server error: ${response.status} - ${errorText}`);
+          if (promptText.length > 5000) {
+            showValidationMessage("Prompt description must be less than 5000 characters.");
+            return;
           }
           
-          // Get and display the response
-          const data = await response.json();
-          resultElement.textContent = data.generatedText;
+          hideValidationMessage();
+          showLoadingState();
+          
+          // Try streaming first, fallback to regular generation
+          try {
+            const stream = await streamPromptGeneration({ text: promptText });
+            
+            // Start streaming mode
+            showStreamingPrompt();
+            
+            let fullText = '';
+            
+            // Process the stream
+            for await (const chunk of stream.textStream) {
+              fullText += chunk;
+              updateStreamingPrompt(fullText);
+            }
+            
+            // Streaming completed
+            showGeneratedPrompt(fullText);
+            
+          } catch (streamError) {
+            console.warn('Streaming failed, falling back to regular generation:', streamError);
+            
+            // Fallback to non-streaming generation
+            const result = await generatePrompt({ text: promptText });
+            
+            if (!result.success) {
+              throw new Error(result.error || 'Failed to generate prompt');
+            }
+            
+            showGeneratedPrompt(result.text || 'No response generated');
+          }
           
         } catch (error) {
           console.error("Error:", error);
-          resultElement.textContent = "Error: " + (error.message || "Failed to generate prompt");
+          hideLoadingState();
+          showValidationMessage(error.message || "Failed to generate prompt. Please try again.");
         }
       });
+      
+      // Character counter
+      promptField.addEventListener('input', function() {
+        updateCharacterCount();
+        
+        // Clear validation message on valid input
+        const length = promptField.value.trim().length;
+        if (length >= 10 && length <= 5000) {
+          hideValidationMessage();
+        }
+      });
+      
+      // Template button handlers with AI service integration
+      templateButtons.forEach((button, index) => {
+        button.addEventListener('click', async function() {
+          const templateTypes = ['creative', 'business', 'technical', 'educational'];
+          const templateType = templateTypes[index];
+          
+          // Set template text in input
+          if (templates[templateType]) {
+            promptField.value = templates[templateType];
+            updateCharacterCount();
+            hideValidationMessage();
+            
+            // Optionally auto-generate with template type
+            // Uncomment the following lines to auto-generate when template is selected
+            // try {
+            //   showLoadingState();
+            //   const result = await generatePromptByType(templates[templateType], templateType);
+            //   if (result.success) {
+            //     showGeneratedPrompt(result.text || 'No response generated');
+            //   } else {
+            //     hideLoadingState();
+            //     showValidationMessage(result.error || 'Failed to generate prompt');
+            //   }
+            // } catch (error) {
+            //   hideLoadingState();
+            //   showValidationMessage('Failed to generate prompt with template');
+            // }
+          }
+        });
+      });
+      
+      // Copy button handler
+      if (copyButton) {
+        copyButton.addEventListener('click', async function() {
+          const promptContent = generatedPrompt.querySelector('pre')?.textContent || '';
+          if (promptContent) {
+            try {
+              await navigator.clipboard.writeText(promptContent);
+              
+              // Show feedback
+              const originalText = copyButton.textContent;
+              copyButton.textContent = 'Copied!';
+              copyButton.classList.add('bg-green-100', 'dark:bg-green-900', 'text-green-700', 'dark:text-green-300');
+              copyButton.classList.remove('bg-gray-100', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+              
+              setTimeout(() => {
+                copyButton.textContent = originalText;
+                copyButton.classList.remove('bg-green-100', 'dark:bg-green-900', 'text-green-700', 'dark:text-green-300');
+                copyButton.classList.add('bg-gray-100', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+              }, 2000);
+            } catch (err) {
+              console.error('Failed to copy text:', err);
+            }
+          }
+        });
+      }
     }
+    
+    // Helper functions
+    function updateCharacterCount() {
+      const currentLength = promptField.value.length;
+      charCount.textContent = `${currentLength}/5000`;
+      
+      // Update counter color
+      charCount.className = 'text-gray-600 dark:text-gray-300';
+      if (currentLength > 4500) {
+        charCount.className = 'text-red-600 dark:text-red-400';
+      } else if (currentLength > 4000) {
+        charCount.className = 'text-yellow-600 dark:text-yellow-400';
+      }
+    }
+    
+    function showValidationMessage(message) {
+      if (validationMessage) {
+        validationMessage.textContent = message;
+        validationMessage.classList.remove('hidden');
+      }
+    }
+    
+    function hideValidationMessage() {
+      if (validationMessage) {
+        validationMessage.classList.add('hidden');
+      }
+    }
+    
+    function showLoadingState() {
+      // Update button
+      if (generateButton && buttonText && loadingSpinner) {
+        generateButton.disabled = true;
+        buttonText.classList.add('hidden');
+        loadingSpinner.classList.remove('hidden');
+      }
+      
+      // Show loading state
+      if (emptyState && loadingState && generatedPrompt) {
+        emptyState.classList.add('hidden');
+        loadingState.classList.remove('hidden');
+        generatedPrompt.classList.add('hidden');
+      }
+      
+      // Hide copy button
+      if (copyButton) {
+        copyButton.classList.add('hidden');
+      }
+    }
+    
+    function hideLoadingState() {
+      // Reset button
+      if (generateButton && buttonText && loadingSpinner) {
+        generateButton.disabled = false;
+        buttonText.classList.remove('hidden');
+        loadingSpinner.classList.add('hidden');
+      }
+      
+      // Hide loading state
+      if (loadingState) {
+        loadingState.classList.add('hidden');
+      }
+    }
+    
+    function showStreamingPrompt() {
+      hideLoadingState();
+      
+      if (emptyState && generatedPrompt) {
+        // Hide empty state and show prompt container
+        emptyState.classList.add('hidden');
+        generatedPrompt.classList.remove('hidden');
+        
+        // Add streaming indicator
+        const promptPre = generatedPrompt.querySelector('pre');
+        if (promptPre) {
+          promptPre.textContent = '';
+          promptPre.classList.add('streaming');
+        }
+      }
+    }
+    
+    function updateStreamingPrompt(text) {
+      const promptPre = generatedPrompt.querySelector('pre');
+      if (promptPre) {
+        promptPre.textContent = text;
+      }
+    }
+    
+    function showGeneratedPrompt(text) {
+      hideLoadingState();
+      
+      if (emptyState && generatedPrompt && copyButton) {
+        // Hide empty state
+        emptyState.classList.add('hidden');
+        
+        // Show generated prompt
+        const promptPre = generatedPrompt.querySelector('pre');
+        if (promptPre) {
+          promptPre.textContent = text;
+          promptPre.classList.remove('streaming');
+        }
+        generatedPrompt.classList.remove('hidden');
+        
+        // Show copy button
+        copyButton.classList.remove('hidden');
+      }
+    }
+    
+    // Initialize character count
+    updateCharacterCount();
   });
 </script>
 
@@ -134,5 +433,16 @@ const apiKey = "AIzaSyAiN-ESjJzTi8uozCH35livfVSFppCvYCE";
   
   p {
     @apply text-gray-600 dark:text-gray-300;
+  }
+  
+  /* Streaming animation */
+  .streaming::after {
+    content: "▊";
+    animation: blink 1s infinite;
+  }
+  
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
   }
 </style>
