@@ -1,0 +1,37 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/container.astro";
+import LandingHero from "@components/LandingComponents/LandingHero.astro";
+import LandingFeatures from "@components/LandingComponents/LandingFeatures.astro";
+import LandingCTA from "@components/LandingComponents/LandingCTA.astro";
+import LandingFAQ from "@components/LandingComponents/LandingFAQ.astro";
+import LandingContact from "@components/LandingComponents/LandingContact.astro";
+import diyContent from "@data/diyPromptLibrary.json";
+---
+
+<Layout title="Get Your Own Prompt Library - Free Open Source AI Tools">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <!-- Hero Section -->
+    <Container>
+      <LandingHero content={diyContent.hero} />
+    </Container>
+
+    <!-- Features Section -->
+    <Container>
+      <LandingFeatures content={diyContent.features} />
+    </Container>
+
+    <!-- Open Source Explanation Section -->
+    <Container>
+      <LandingCTA content={diyContent.cta} />
+    </Container>
+
+    <!-- FAQ Section -->
+    <Container>
+      <LandingFAQ content={diyContent.faq} />
+    </Container>
+
+    <!-- Contact Section -->
+    <LandingContact content={diyContent.contact} />
+  </div>
+</Layout>

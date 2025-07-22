@@ -1,0 +1,160 @@
+{
+  "hero": {
+    "headline": "Get Your Own Prompt Library",
+    "description": "This entire project is open-source and available for you to download, modify, and use for your own prompt library. Perfect for individuals, teams, or businesses who want complete control over their AI prompt collection.",
+    "buttons": {
+      "primary": {
+        "text": "View on GitHub",
+        "href": "https://github.com/your-username/company-ai-prompts",
+        "icon": "simple-icons:github"
+      },
+      "secondary": {
+        "text": "Live Demo",
+        "href": "/prompt-generator",
+        "icon": "bx:bx-rocket"
+      }
+    },
+    "benefits": [
+      "Complete source code",
+      "Modern tech stack",
+      "Easy to customize"
+    ],
+    "trustIndicators": {
+      "title": "Free & Open Source Software",
+      "stats": [
+        {
+          "text": "MIT Licensed",
+          "icon": "bx:bx-check-shield"
+        },
+        {
+          "text": "100% Free",
+          "icon": "bx:bx-dollar"
+        },
+        {
+          "text": "No Vendor Lock-in",
+          "icon": "bx:bx-lock-open"
+        }
+      ]
+    },
+    "icons": {
+      "brain": "bx:bxs-brain",
+      "floating": [
+        "bx:bx-code-alt",
+        "simple-icons:github",
+        "bx:bx-download",
+        "bx:bx-customize"
+      ],
+      "check": "bx:bx-check"
+    }
+  },
+  "features": {
+    "header": {
+      "title": "What You Get",
+      "description": "Everything you need to build and manage your own AI prompt library, completely free and customizable."
+    },
+    "items": [
+      {
+        "title": "Complete Source Code",
+        "description": "Full access to all code, including the AI integration, user interface, and prompt management system. Built with modern technologies like Astro, TypeScript, and Tailwind CSS.",
+        "icon": "bx:bx-code-alt"
+      },
+      {
+        "title": "AI Integration Ready",
+        "description": "Pre-configured integration with Google Gemini AI through the Vercel AI SDK. Easy to swap for other AI providers or add multiple AI models.",
+        "icon": "bx:bxs-brain"
+      },
+      {
+        "title": "Modern Tech Stack",
+        "description": "Built with Astro for fast static sites, TypeScript for type safety, Tailwind CSS for styling, and comprehensive testing with Vitest.",
+        "icon": "bx:bx-rocket"
+      },
+      {
+        "title": "Responsive Design",
+        "description": "Mobile-first design that works perfectly on all devices. Dark mode support and accessibility features built-in from the start.",
+        "icon": "bx:bx-mobile-alt"
+      },
+      {
+        "title": "Easy Deployment",
+        "description": "Deploy anywhere - Netlify, Vercel, GitHub Pages, or your own server. Static site generation means fast loading and low hosting costs.",
+        "icon": "bx:bx-cloud-upload"
+      },
+      {
+        "title": "Fully Customizable",
+        "description": "Modify the design, add new features, integrate with your existing systems. The code is clean, well-documented, and easy to understand.",
+        "icon": "bx:bx-customize"
+      }
+    ]
+  },
+  "cta": {
+    "headline": "Understanding Open Source",
+    "description": "Open source software is code that anyone can view, use, and modify. Think of it like a recipe that's shared freely - you can use it exactly as written, or change ingredients to suit your taste. This project is open source, which means you get complete freedom and control.",
+    "button": {
+      "text": "Download Project",
+      "href": "https://github.com/your-username/company-ai-prompts/archive/main.zip"
+    }
+  },
+  "faq": {
+    "header": {
+      "title": "Frequently Asked Questions",
+      "description": "Everything you need to know about using this open-source project for your own prompt library."
+    },
+    "items": [
+      {
+        "id": "faq-1",
+        "question": "Do I need to be a developer to use this?",
+        "answer": "While some technical knowledge helps, the project includes detailed setup instructions. If you can follow a recipe, you can likely get this running. For major customizations, you might want to work with a developer."
+      },
+      {
+        "id": "faq-2",
+        "question": "What AI services does it work with?",
+        "answer": "Currently configured for Google Gemini, but the Vercel AI SDK supports OpenAI, Anthropic, Cohere, and many others. Switching providers typically requires changing just a few lines of code."
+      },
+      {
+        "id": "faq-3",
+        "question": "How much does it cost to run?",
+        "answer": "The hosting can be free (Netlify, Vercel, GitHub Pages). You'll only pay for AI API calls based on your usage. Google Gemini has generous free tiers to get you started."
+      },
+      {
+        "id": "faq-4",
+        "question": "Can I remove the branding and make it my own?",
+        "answer": "Absolutely! You can customize everything - colors, logos, text, layout. Make it completely your own brand. The open-source license gives you full freedom to modify and rebrand."
+      },
+      {
+        "id": "faq-5",
+        "question": "What's the difference between open source and free software?",
+        "answer": "Open source means you can see and modify the code. 'Free' usually means no cost, but you might not get the code. This project is both - free to use AND you get all the source code to modify as needed."
+      },
+      {
+        "id": "faq-6",
+        "question": "Can I use this for my business?",
+        "answer": "Yes! You can use this for personal projects, client work, or your own business. The only restriction is that you can't resell the original code itself - but you can absolutely build commercial services with it."
+      },
+      {
+        "id": "faq-7",
+        "question": "Is there ongoing support?",
+        "answer": "This is a community project. While we can't provide individual support, you can report bugs and request features on GitHub where the community can help."
+      },
+      {
+        "id": "faq-8",
+        "question": "Can I contribute improvements back?",
+        "answer": "Yes! Open source thrives on community contributions. If you add features or fix bugs, you're welcome to submit them back to help others."
+      }
+    ],
+    "chevronIcon": "bx:bx-chevron-down"
+  },
+  "contact": {
+    "header": {
+      "title": "Need Help Getting Started?",
+      "description": "Have questions about setting up your own prompt library? Check out the documentation or connect with the community."
+    },
+    "content": {
+      "subtitle": "Resources & Community",
+      "description": "Getting started with open source can feel overwhelming, but you're not alone. We've prepared comprehensive documentation and there's a helpful community ready to assist.",
+      "features": [
+        "Step-by-step setup guides",
+        "Active GitHub community",
+        "Detailed code documentation"
+      ]
+    }
+  }
+}
