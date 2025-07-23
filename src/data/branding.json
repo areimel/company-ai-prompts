@@ -5,8 +5,8 @@
     "website": "https://alecreimel.com/"
   },
   "site": {
-    "name": "AI Prompt Directory",
-    "description": "A library for storing and sharing AI prompts across your company, organization, or team. Get your own AI Prompt Directory today and empower your team to use AI to its fullest potential.",
+    "name": "AI Prompt Library",
+    "description": "A library for storing and sharing AI prompts across your company, organization, or team. Get your own AI Prompt Library today and empower your team to use AI to its fullest potential.",
     "logo": {
       "light": {
         "path": "/Placeholder-Logo-Black.png",
@@ -56,12 +56,12 @@
     }
   },
   "seo": {
-    "title": "AI Prompt Directory | Alec Reimel",
-    "description": "A library for storing and sharing AI prompts across your company, organization, or team. Get your own AI Prompt Directory today and empower your team to use AI to its fullest potential.",
+    "title": "AI Prompt Library | Alec Reimel",
+    "description": "A library for storing and sharing AI prompts across your company, organization, or team. Get your own AI Prompt Library today and empower your team to use AI to its fullest potential.",
     "openGraph": {
-      "title": "AI Prompt Directory | Alec Reimel",
+      "title": "AI Prompt Library | Alec Reimel",
       "image": {
-        "alt": "AI Prompt Directory Homepage Screenshot"
+        "alt": "AI Prompt Library Homepage Screenshot"
       }
     }
   },
