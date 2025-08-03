@@ -1,0 +1,71 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Container from "@components/container.astro";
+import Sectionhead from "@components/sectionhead.astro";
+import PromptSubmissionForm from "@components/FormComponents/PromptSubmissionForm.astro";
+
+const pageTitle = "Submit Your AI Prompt";
+const pageDescription = "Share your AI prompts with our community. Help others discover powerful prompts for ChatGPT, Claude, Cursor, and other AI platforms.";
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <Container class="my-24">
+    <Sectionhead>
+      <Fragment slot="title">Submit Your AI Prompt</Fragment>
+      <Fragment slot="desc">
+        Share your powerful AI prompts with our community and help others achieve better results with AI.
+      </Fragment>
+    </Sectionhead>
+    
+    <div class="grid md:grid-cols-2 gap-10 mx-auto max-w-4xl mt-16">
+      <div class="flex flex-col justify-center">
+        <h3 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+          Why Submit Your Prompts?
+        </h3>
+        <p class="text-lg text-gray-600 dark:text-gray-400 mb-6">
+          Help grow our community-driven library of AI prompts. Your contributions help others save time and achieve better results with AI tools.
+        </p>
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-6 h-6 bg-black dark:bg-white rounded-full flex items-center justify-center shrink-0">
+              <svg class="w-3 h-3 text-white dark:text-black" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <span class="text-gray-600 dark:text-gray-400">Share proven prompts that work</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-6 h-6 bg-black dark:bg-white rounded-full flex items-center justify-center shrink-0">
+              <svg class="w-3 h-3 text-white dark:text-black" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
+              </svg>
+            </div>
+            <span class="text-gray-600 dark:text-gray-400">Help the AI community grow</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-6 h-6 bg-black dark:bg-white rounded-full flex items-center justify-center shrink-0">
+              <svg class="w-3 h-3 text-white dark:text-black" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <span class="text-gray-600 dark:text-gray-400">Get credit for your contributions</span>
+          </div>
+        </div>
+
+        <div class="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+          <h4 class="font-semibold text-blue-900 dark:text-blue-100 mb-2">Submission Guidelines</h4>
+          <ul class="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+            <li>• Provide clear, tested prompts</li>
+            <li>• Include helpful usage instructions</li>
+            <li>• Choose appropriate categories and tags</li>
+            <li>• Ensure prompts are original or properly attributed</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="bg-gray-50 dark:bg-gray-900 p-8 rounded-lg">
+        <PromptSubmissionForm />
+      </div>
+    </div>
+  </Container>
+</Layout>

@@ -1,0 +1,18 @@
+---
+import branding from "@data/branding.json";
+---
+
+<a href="/" class="text-lg">
+	{/* Light mode logo */}
+	<img 
+		src={branding.site.logo.light.path} 
+		alt={branding.site.logo.light.alt} 
+		class="w-60 h-auto block dark:hidden" 
+	/>
+	{/* Dark mode logo */}
+	<img 
+		src={branding.site.logo.dark.path} 
+		alt={branding.site.logo.dark.alt} 
+		class="w-60 h-auto hidden dark:block" 
+	/>
+</a> 

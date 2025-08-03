@@ -1,0 +1,237 @@
+---
+import Button from "@components/ui/button.astro";
+---
+
+<!-- Prompt Submission Form - Based on contactForm.astro but customized for AI prompt submissions -->
+<form
+  action="https://api.web3forms.com/submit"
+  method="POST"
+  id="promptSubmissionForm"
+  class="needs-validation"
+  novalidate>
+  <input type="hidden" name="access_key" value="75f8b211-81aa-45c2-9c7b-c11f447d30a0" />
+  <input type="hidden" name="subject" value="New AI Prompt Submission" />
+  <input type="hidden" name="from_name" value="Company AI Prompts - Submission Form" />
+  <input type="checkbox" class="hidden" style="display:none" name="botcheck" />
+  
+  <!-- Submitter Information -->
+  <div class="mb-5">
+    <input
+      type="text"
+      placeholder="Your Name"
+      required
+      class="w-full px-4 py-3 border-2 placeholder:text-gray-800 rounded-md outline-none focus:ring-4 border-gray-300 focus:border-gray-600 ring-gray-100"
+      name="submitter_name"
+    />
+    <div class="empty-feedback invalid-feedback text-red-400 text-sm mt-1">
+      Please provide your name.
+    </div>
+  </div>
+  
+  <div class="mb-5">
+    <label for="submitter_email" class="sr-only">Email Address</label>
+    <input
+      id="submitter_email"
+      type="email"
+      placeholder="Your Email Address"
+      name="submitter_email"
+      required
+      class="w-full px-4 py-3 border-2 placeholder:text-gray-800 rounded-md outline-none focus:ring-4 border-gray-300 focus:border-gray-600 ring-gray-100"
+    />
+    <div class="empty-feedback text-red-400 text-sm mt-1">
+      Please provide your email address.
+    </div>
+    <div class="invalid-feedback text-red-400 text-sm mt-1">
+      Please provide a valid email address.
+    </div>
+  </div>
+
+  <!-- Prompt Details -->
+  <div class="mb-5">
+    <input
+      type="text"
+      placeholder="Prompt Title"
+      required
+      class="w-full px-4 py-3 border-2 placeholder:text-gray-800 rounded-md outline-none focus:ring-4 border-gray-300 focus:border-gray-600 ring-gray-100"
+      name="prompt_title"
+    />
+    <div class="empty-feedback invalid-feedback text-red-400 text-sm mt-1">
+      Please provide a title for your prompt.
+    </div>
+  </div>
+
+  <div class="mb-5">
+    <textarea
+      name="prompt_description"
+      required
+      placeholder="Brief description of what this prompt does"
+      class="w-full px-4 py-3 border-2 placeholder:text-gray-800 rounded-md outline-none h-24 focus:ring-4 border-gray-300 focus:border-gray-600 ring-gray-100"
+    ></textarea>
+    <div class="empty-feedback invalid-feedback text-red-400 text-sm mt-1">
+      Please provide a description for your prompt.
+    </div>
+  </div>
+
+  <div class="mb-5">
+    <select
+      name="prompt_category"
+      required
+      class="w-full px-4 py-3 border-2 text-gray-800 rounded-md outline-none focus:ring-4 border-gray-300 focus:border-gray-600 ring-gray-100"
+    >
+      <option value="" disabled selected>Select Category</option>
+      <option value="Coding">Coding</option>
+      <option value="Writing">Writing</option>
+      <option value="Creative">Creative</option>
+      <option value="Analysis">Analysis</option>
+      <option value="Marketing">Marketing</option>
+      <option value="Other">Other</option>
+    </select>
+    <div class="empty-feedback invalid-feedback text-red-400 text-sm mt-1">
+      Please select a category for your prompt.
+    </div>
+  </div>
+
+  <div class="mb-5">
+    <select
+      name="prompt_sub_category"
+      required
+      class="w-full px-4 py-3 border-2 text-gray-800 rounded-md outline-none focus:ring-4 border-gray-300 focus:border-gray-600 ring-gray-100"
+    >
+      <option value="" disabled selected>Select AI Platform</option>
+      <option value="ChatGPT">ChatGPT</option>
+      <option value="Claude">Claude</option>
+      <option value="Cursor">Cursor</option>
+      <option value="MidJourney">MidJourney</option>
+      <option value="Other">Other</option>
+    </select>
+    <div class="empty-feedback invalid-feedback text-red-400 text-sm mt-1">
+      Please select an AI platform for your prompt.
+    </div>
+  </div>
+
+  <div class="mb-5">
+    <input
+      type="text"
+      placeholder="Tags (comma-separated, e.g., react, frontend, web-development)"
+      class="w-full px-4 py-3 border-2 placeholder:text-gray-800 rounded-md outline-none focus:ring-4 border-gray-300 focus:border-gray-600 ring-gray-100"
+      name="prompt_tags"
+    />
+    <div class="text-gray-500 text-sm mt-1">
+      Optional: Add relevant tags separated by commas
+    </div>
+  </div>
+
+  <!-- The actual prompt content -->
+  <div class="mb-5">
+    <textarea
+      name="prompt_content"
+      required
+      placeholder="Paste your AI prompt here..."
+      class="w-full px-4 py-3 border-2 placeholder:text-gray-800 rounded-md outline-none h-48 focus:ring-4 border-gray-300 focus:border-gray-600 ring-gray-100"
+    ></textarea>
+    <div class="empty-feedback invalid-feedback text-red-400 text-sm mt-1">
+      Please provide the prompt content.
+    </div>
+  </div>
+
+  <div class="mb-5">
+    <textarea
+      name="usage_instructions"
+      placeholder="Usage instructions (optional) - How should others use this prompt effectively?"
+      class="w-full px-4 py-3 border-2 placeholder:text-gray-800 rounded-md outline-none h-32 focus:ring-4 border-gray-300 focus:border-gray-600 ring-gray-100"
+    ></textarea>
+    <div class="text-gray-500 text-sm mt-1">
+      Optional: Provide instructions on how to use this prompt effectively
+    </div>
+  </div>
+
+  <!-- Additional Information -->
+  <div class="mb-3">
+    <textarea
+      name="additional_notes"
+      placeholder="Additional notes or comments (optional)"
+      class="w-full px-4 py-3 border-2 placeholder:text-gray-800 rounded-md outline-none h-24 focus:ring-4 border-gray-300 focus:border-gray-600 ring-gray-100"
+    ></textarea>
+    <div class="text-gray-500 text-sm mt-1">
+      Optional: Any additional context or notes about your prompt
+    </div>
+  </div>
+
+  <Button type="submit" size="lg" block>Submit Prompt</Button>
+  <div id="promptSubmissionResult" class="mt-3 text-center"></div>
+</form>
+
+<style>
+  .invalid-feedback,
+  .empty-feedback {
+    display: none;
+  }
+
+  .was-validated :placeholder-shown:invalid ~ .empty-feedback {
+    display: block;
+  }
+
+  .was-validated :not(:placeholder-shown):invalid ~ .invalid-feedback {
+    display: block;
+  }
+
+  .is-invalid,
+  .was-validated :invalid {
+    border-color: #dc3545;
+  }
+</style>
+
+<script is:inline>
+  const form = document.getElementById("promptSubmissionForm");
+  const result = document.getElementById("promptSubmissionResult");
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    form.classList.add("was-validated");
+    if (!form.checkValidity()) {
+      form.querySelectorAll(":invalid")[0].focus();
+      return;
+    }
+    const formData = new FormData(form);
+    const object = Object.fromEntries(formData);
+    const json = JSON.stringify(object);
+
+    result.innerHTML = "Submitting your prompt...";
+    result.className = "mt-3 text-center text-blue-500";
+
+    fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: json,
+    })
+      .then(async (response) => {
+        let json = await response.json();
+        if (response.status == 200) {
+          result.classList.remove("text-blue-500");
+          result.classList.add("text-green-500");
+          result.innerHTML = "Thank you! Your prompt has been submitted successfully. We'll review it and add it to our library.";
+        } else {
+          console.log(response);
+          result.classList.remove("text-blue-500");
+          result.classList.add("text-red-500");
+          result.innerHTML = json.message;
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        result.classList.remove("text-blue-500");
+        result.classList.add("text-red-500");
+        result.innerHTML = "Something went wrong! Please try again.";
+      })
+      .then(function () {
+        form.reset();
+        form.classList.remove("was-validated");
+        setTimeout(() => {
+          result.style.display = "none";
+        }, 8000);
+      });
+  });
+</script>
