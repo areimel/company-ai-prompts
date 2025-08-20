@@ -1,0 +1,71 @@
+---
+import Layout from '@layouts/Layout.astro';
+import Container from '@components/container.astro';
+import Sectionhead from '@components/sectionhead.astro';
+import UserDashboard from '@components/AuthComponents/UserDashboard.astro';
+import { AuthService } from '@lib/auth-service';
+import { FavoritesService } from '@lib/favorites-service';
+import { FeatureFlags } from '@lib/feature-flags';
+
+// Redirect if auth is disabled
+if (!FeatureFlags.AUTH_ENABLED) {
+  return Astro.redirect('/404');
+}
+
+// Get user from middleware (already authenticated via middleware)
+const { user, isAuthenticated } = Astro.locals;
+
+// If not authenticated, middleware will redirect to login
+if (!isAuthenticated || !user) {
+  return Astro.redirect('/login?redirect=' + encodeURIComponent('/dashboard'));
+}
+
+// Get user profile
+const profile = await AuthService.getUserProfile(user.id);
+
+// Get favorites counts
+const [promptsCount, personasCount, blogCount] = await Promise.all([
+  FavoritesService.getFavoritesCount('prompt'),
+  FavoritesService.getFavoritesCount('persona'),
+  FavoritesService.getFavoritesCount('blog'),
+]);
+
+const favoritesCounts = {
+  prompts: promptsCount,
+  personas: personasCount,
+  blog: blogCount,
+  total: promptsCount + personasCount + blogCount,
+};
+
+// Get recent favorites (last 6 items)
+const recentFavoritesResult = await FavoritesService.getUserFavorites(undefined, 1, 6);
+const recentFavorites = recentFavoritesResult.items;
+
+const title = 'Dashboard';
+const description = 'Your personal dashboard with favorites, stats, and quick actions.';
+---
+
+<Layout title={title}>
+  <Container>
+    <Sectionhead>
+      <Fragment slot="title">{title}</Fragment>
+      <Fragment slot="desc">{description}</Fragment>
+    </Sectionhead>
+
+    <div class="mt-8">
+      <UserDashboard 
+        user={user}
+        profile={profile}
+        favoritesCounts={favoritesCounts}
+        recentFavorites={recentFavorites}
+      />
+    </div>
+  </Container>
+</Layout>
+
+<style>
+  /* Custom page styles */
+  .container {
+    @apply pt-8 pb-16;
+  }
+</style>

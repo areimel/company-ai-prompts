@@ -12,12 +12,18 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
+    "test:auth": "vitest run --config vitest.config.auth.ts",
+    "test:auth:watch": "vitest --config vitest.config.auth.ts",
+    "test:auth:ui": "vitest --ui --config vitest.config.auth.ts",
+    "test:auth:coverage": "vitest run --config vitest.config.auth.ts --coverage",
+    "test:coverage": "vitest run --coverage",
     "img-compress": "optimizt public/*.jpg public/*.jpeg public/*.png"
   },
   "dependencies": {
     "@ai-sdk/google": "^1.2.22",
     "@astrojs/mdx": "^4.2.6",
     "@astrojs/netlify": "^6.3.3",
+    "@astrojs/node": "^9.4.2",
     "@astrojs/sitemap": "^3.4.0",
     "@astrojs/tailwind": "^6.0.2",
     "@fontsource-variable/bricolage-grotesque": "^5.0.6",
@@ -26,6 +32,7 @@
     "@iconify-json/bx": "^1.1.10",
     "@iconify-json/simple-icons": "^1.1.102",
     "@iconify-json/uil": "^1.1.8",
+    "@supabase/supabase-js": "^2.55.0",
     "@tailwindcss/typography": "^0.5.13",
     "ai": "^4.3.19",
     "astro": "^5.7.13",
@@ -37,6 +44,8 @@
   },
   "devDependencies": {
     "@iconify-icons/simple-icons": "^1.2.74",
+    "@vitest/ui": "^3.2.4",
+    "jsdom": "^26.0.0",
     "vitest": "^3.2.4"
   }
 }

@@ -1,0 +1,154 @@
+---
+import { FeatureFlags } from '@lib/feature-flags';
+import { Icon } from 'astro-icon/components';
+
+// Only render if auth is enabled
+if (!FeatureFlags.AUTH_ENABLED) {
+  return null;
+}
+
+// Get auth state from middleware
+const { isAuthenticated, user } = Astro.locals;
+---
+
+{FeatureFlags.AUTH_ENABLED && (
+  <div class="auth-button-container">
+    {isAuthenticated ? (
+      <!-- Authenticated user dropdown -->
+      <div class="relative group">
+        <button
+          type="button"
+          class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-800 transition-colors"
+          aria-expanded="false"
+          aria-haspopup="true"
+          id="user-menu-button"
+        >
+          <!-- User avatar or default icon -->
+          <div class="w-6 h-6 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold">
+            {user?.email?.charAt(0).toUpperCase() || 'U'}
+          </div>
+          <span class="hidden md:inline-block">{user?.email?.split('@')[0] || 'User'}</span>
+          <Icon name="bx:chevron-down" class="w-4 h-4" />
+        </button>
+
+        <!-- Dropdown menu -->
+        <div
+          class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+          role="menu"
+          aria-orientation="vertical"
+          aria-labelledby="user-menu-button"
+        >
+          <a
+            href="/dashboard"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+            role="menuitem"
+          >
+            <Icon name="bx:dashboard" class="w-4 h-4 inline mr-2" />
+            Dashboard
+          </a>
+          <a
+            href="/favorites"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+            role="menuitem"
+          >
+            <Icon name="bx:heart" class="w-4 h-4 inline mr-2" />
+            Favorites
+          </a>
+          <a
+            href="/profile"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+            role="menuitem"
+          >
+            <Icon name="bx:user" class="w-4 h-4 inline mr-2" />
+            Profile
+          </a>
+          <hr class="my-1 border-gray-200 dark:border-gray-600" />
+          <button
+            type="button"
+            class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+            role="menuitem"
+            id="logout-button"
+          >
+            <Icon name="bx:log-out" class="w-4 h-4 inline mr-2" />
+            Sign out
+          </button>
+        </div>
+      </div>
+    ) : (
+      <!-- Unauthenticated user buttons -->
+      <div class="flex items-center gap-2">
+        <a
+          href="/login"
+          class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
+        >
+          Sign in
+        </a>
+        <a
+          href="/register"
+          class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors"
+        >
+          Sign up
+        </a>
+      </div>
+    )}
+  </div>
+)}
+
+<script>
+  // Handle logout functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    const logoutButton = document.getElementById('logout-button');
+    
+    if (logoutButton) {
+      logoutButton.addEventListener('click', async () => {
+        try {
+          const response = await fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            // Redirect to home page after successful logout
+            window.location.href = '/';
+          } else {
+            console.error('Logout failed:', result.error);
+            alert('Logout failed. Please try again.');
+          }
+        } catch (error) {
+          console.error('Logout error:', error);
+          alert('An error occurred during logout. Please try again.');
+        }
+      });
+    }
+
+    // Handle dropdown menu toggle on mobile
+    const userMenuButton = document.getElementById('user-menu-button');
+    if (userMenuButton) {
+      userMenuButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        const dropdown = userMenuButton.nextElementSibling;
+        if (dropdown) {
+          dropdown.classList.toggle('opacity-0');
+          dropdown.classList.toggle('invisible');
+          dropdown.classList.toggle('opacity-100');
+          dropdown.classList.toggle('visible');
+        }
+      });
+    }
+  });
+</script>
+
+<style>
+  .auth-button-container {
+    @apply flex items-center;
+  }
+
+  /* Smooth dropdown animations */
+  .group:hover .group-hover\:opacity-100 {
+    transition-delay: 100ms;
+  }
+</style>

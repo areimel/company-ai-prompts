@@ -10,7 +10,9 @@
       "Bash(pnpm test:*)",
       "Bash(npx vitest run:*)",
       "Bash(pnpm build:*)",
-      "Bash(npx astro:*)"
+      "Bash(npx astro:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.astro.build)"
     ],
     "deny": []
   }

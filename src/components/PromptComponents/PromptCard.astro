@@ -1,4 +1,7 @@
 ---
+import FavoriteButton from "@components/AuthComponents/FavoriteButton.astro";
+import { FeatureFlags } from "@lib/feature-flags";
+
 interface Props {
   itemEntry: {
     data: {
@@ -33,7 +36,7 @@ const subCategoryLabel = collectionType === 'personas' ? 'Persona Type' : 'AI To
   data-title={itemEntry.data.title}
   data-description={itemEntry.data.description}
 >
-  <div class="p-4 sm:p-6 flex-shrink-0 border-b border-gray-200 dark:border-gray-700">
+  <div class="p-4 sm:p-6 flex-shrink-0 border-b border-gray-200 dark:border-gray-700 relative">
     <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-4">
       {itemEntry.data.featured && (
         <span class="bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-400 text-xs font-medium px-2 sm:px-2.5 py-1 rounded-full">
@@ -44,6 +47,18 @@ const subCategoryLabel = collectionType === 'personas' ? 'Persona Type' : 'AI To
         {itemEntry.data.category}
       </span>
     </div>
+
+    {/* Favorite Button - positioned in top-right corner */}
+    {FeatureFlags.FAVORITES_ENABLED && (
+      <div class="absolute top-3 right-3">
+        <FavoriteButton 
+          contentType={collectionType === 'personas' ? 'persona' : 'prompt'}
+          contentSlug={itemEntry.slug}
+          contentTitle={itemEntry.data.title}
+          size="sm"
+        />
+      </div>
+    )}
 
     <h2 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-2">
       {itemEntry.data.title}

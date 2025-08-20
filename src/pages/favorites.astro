@@ -1,0 +1,196 @@
+---
+import Layout from '@layouts/Layout.astro';
+import Container from '@components/container.astro';
+import Sectionhead from '@components/sectionhead.astro';
+import FavoritesGrid from '@components/AuthComponents/FavoritesGrid.astro';
+import NavLink from '@components/ui/NavLink.astro';
+import { Icon } from 'astro-icon/components';
+import { FavoritesService } from '@lib/favorites-service';
+import { FeatureFlags } from '@lib/feature-flags';
+
+// Redirect if auth is disabled
+if (!FeatureFlags.AUTH_ENABLED) {
+  return Astro.redirect('/404');
+}
+
+// Get user from middleware (already authenticated via middleware)
+const { user, isAuthenticated } = Astro.locals;
+
+// If not authenticated, middleware will redirect to login
+if (!isAuthenticated || !user) {
+  return Astro.redirect('/login?redirect=' + encodeURIComponent('/favorites'));
+}
+
+// Get query parameters
+const url = Astro.url;
+const activeTab = (url.searchParams.get('tab') as 'all' | 'prompt' | 'persona' | 'blog') || 'all';
+const searchQuery = url.searchParams.get('search') || '';
+const viewMode = (url.searchParams.get('view') as 'grid' | 'list') || 'grid';
+const page = parseInt(url.searchParams.get('page') || '1');
+const limit = 20;
+
+// Validate activeTab
+const validTabs = ['all', 'prompt', 'persona', 'blog'];
+const normalizedTab = validTabs.includes(activeTab) ? activeTab : 'all';
+
+// Get favorites based on filters
+const contentType = normalizedTab === 'all' ? undefined : normalizedTab as 'prompt' | 'persona' | 'blog';
+const favoritesResult = await FavoritesService.getUserFavorites(contentType, page, limit);
+
+// Filter by search query if provided (client-side filtering for simplicity)
+let filteredFavorites = favoritesResult.items;
+if (searchQuery) {
+  filteredFavorites = favoritesResult.items.filter(favorite => 
+    (favorite.content_title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+     favorite.content_slug.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+}
+
+// Get all favorites for tab counts (without filtering)
+const allFavoritesResult = await FavoritesService.getUserFavorites(undefined, 1, 1000);
+const allFavorites = allFavoritesResult.items;
+
+const title = 'My Favorites';
+const description = 'View and manage all your saved prompts, AI personas, and blog posts.';
+---
+
+<Layout title={title}>
+  <Container>
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 mb-6" aria-label="Breadcrumb">
+      <NavLink href="/dashboard" class="hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center">
+        <Icon name="boxicons:bx-home" class="w-4 h-4 mr-1" />
+        Dashboard
+      </NavLink>
+      <Icon name="boxicons:bx-chevron-right" class="w-4 h-4" />
+      <span class="text-gray-900 dark:text-white font-medium">My Favorites</span>
+    </nav>
+
+    <Sectionhead>
+      <Fragment slot="title">
+        <div class="flex items-center justify-center">
+          <Icon name="boxicons:bx-heart" class="w-8 h-8 mr-3 text-red-500" />
+          {title}
+        </div>
+      </Fragment>
+      <Fragment slot="desc">{description}</Fragment>
+    </Sectionhead>
+
+    <!-- Favorites Stats Summary -->
+    <div class="mt-8 mb-8">
+      <div class="bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 rounded-lg p-6 border border-red-100 dark:border-red-800">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              Your Collection
+            </h2>
+            <div class="flex flex-wrap gap-6 text-sm">
+              <div class="flex items-center">
+                <Icon name="boxicons:bx-heart" class="w-4 h-4 mr-1 text-red-500" />
+                <span class="text-gray-600 dark:text-gray-400">
+                  {allFavorites.length} Total Favorites
+                </span>
+              </div>
+              <div class="flex items-center">
+                <Icon name="boxicons:bx-code-alt" class="w-4 h-4 mr-1 text-blue-500" />
+                <span class="text-gray-600 dark:text-gray-400">
+                  {allFavorites.filter(f => f.content_type === 'prompt').length} Prompts
+                </span>
+              </div>
+              <div class="flex items-center">
+                <Icon name="boxicons:bx-user-circle" class="w-4 h-4 mr-1 text-green-500" />
+                <span class="text-gray-600 dark:text-gray-400">
+                  {allFavorites.filter(f => f.content_type === 'persona').length} Personas
+                </span>
+              </div>
+              <div class="flex items-center">
+                <Icon name="boxicons:bx-book-reader" class="w-4 h-4 mr-1 text-purple-500" />
+                <span class="text-gray-600 dark:text-gray-400">
+                  {allFavorites.filter(f => f.content_type === 'blog').length} Blog Posts
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="hidden sm:block">
+            <Icon name="boxicons:bx-collection" class="w-12 h-12 text-red-400" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Favorites Grid Component -->
+    <div class="mt-8">
+      <FavoritesGrid 
+        favorites={allFavorites}
+        activeTab={normalizedTab}
+        searchQuery={searchQuery}
+        viewMode={viewMode}
+        hasMore={favoritesResult.hasMore}
+      />
+    </div>
+
+    <!-- Empty State for New Users -->
+    {allFavorites.length === 0 && (
+      <div class="mt-12 text-center">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-12">
+          <Icon name="boxicons:bx-heart" class="w-20 h-20 mx-auto text-gray-300 dark:text-gray-600 mb-6" />
+          <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Start Building Your Collection
+          </h3>
+          <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
+            Discover amazing prompts, AI personas, and helpful blog posts. Save your favorites to access them anytime and build your personal AI toolkit.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <NavLink 
+              href="/prompts"
+              class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+            >
+              <Icon name="boxicons:bx-code-alt" class="w-5 h-5 mr-2" />
+              Browse Prompts
+            </NavLink>
+            <NavLink 
+              href="/ai-personas"
+              class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
+            >
+              <Icon name="boxicons:bx-user-circle" class="w-5 h-5 mr-2" />
+              Explore AI Personas
+            </NavLink>
+            <NavLink 
+              href="/blog"
+              class="inline-flex items-center px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors"
+            >
+              <Icon name="boxicons:bx-book-reader" class="w-5 h-5 mr-2" />
+              Read Our Blog
+            </NavLink>
+          </div>
+        </div>
+      </div>
+    )}
+
+    <!-- Back to Dashboard -->
+    <div class="mt-12 text-center">
+      <NavLink 
+        href="/dashboard" 
+        class="inline-flex items-center text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium"
+      >
+        <Icon name="boxicons:bx-arrow-back" class="w-4 h-4 mr-2" />
+        Back to Dashboard
+      </NavLink>
+    </div>
+  </Container>
+</Layout>
+
+<style>
+  /* Custom page styles */
+  .container {
+    @apply pt-8 pb-16;
+  }
+
+  /* Utility classes for line clamping */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

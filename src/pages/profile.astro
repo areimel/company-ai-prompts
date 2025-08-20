@@ -1,0 +1,73 @@
+---
+import Layout from '@layouts/Layout.astro';
+import Container from '@components/container.astro';
+import Sectionhead from '@components/sectionhead.astro';
+import UserProfile from '@components/AuthComponents/UserProfile.astro';
+import NavLink from '@components/ui/NavLink.astro';
+import { Icon } from 'astro-icon/components';
+import { AuthService } from '@lib/auth-service';
+import { FeatureFlags } from '@lib/feature-flags';
+
+// Redirect if auth is disabled
+if (!FeatureFlags.AUTH_ENABLED) {
+  return Astro.redirect('/404');
+}
+
+// Get user from middleware (already authenticated via middleware)
+const { user, isAuthenticated } = Astro.locals;
+
+// If not authenticated, middleware will redirect to login
+if (!isAuthenticated || !user) {
+  return Astro.redirect('/login?redirect=' + encodeURIComponent('/profile'));
+}
+
+// Get user profile
+const profile = await AuthService.getUserProfile(user.id);
+
+const title = 'Profile Settings';
+const description = 'Manage your profile information, account settings, and preferences.';
+---
+
+<Layout title={title}>
+  <Container>
+    <!-- Breadcrumb Navigation -->
+    <nav class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 mb-6" aria-label="Breadcrumb">
+      <NavLink href="/dashboard" class="hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center">
+        <Icon name="boxicons:bx-home" class="w-4 h-4 mr-1" />
+        Dashboard
+      </NavLink>
+      <Icon name="boxicons:bx-chevron-right" class="w-4 h-4" />
+      <span class="text-gray-900 dark:text-white font-medium">Profile Settings</span>
+    </nav>
+
+    <Sectionhead>
+      <Fragment slot="title">{title}</Fragment>
+      <Fragment slot="desc">{description}</Fragment>
+    </Sectionhead>
+
+    <div class="mt-8">
+      <UserProfile 
+        user={user}
+        profile={profile}
+      />
+    </div>
+
+    <!-- Back to Dashboard -->
+    <div class="mt-8 text-center">
+      <NavLink 
+        href="/dashboard" 
+        class="inline-flex items-center text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium"
+      >
+        <Icon name="boxicons:bx-arrow-back" class="w-4 h-4 mr-2" />
+        Back to Dashboard
+      </NavLink>
+    </div>
+  </Container>
+</Layout>
+
+<style>
+  /* Custom page styles */
+  .container {
+    @apply pt-8 pb-16;
+  }
+</style>

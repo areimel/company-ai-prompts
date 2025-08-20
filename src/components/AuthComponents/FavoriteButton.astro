@@ -1,0 +1,374 @@
+---
+import { FeatureFlags } from '@lib/feature-flags';
+import { Icon } from 'astro-icon/components';
+import LoadingSpinner from '@components/ui/LoadingSpinner.astro';
+
+// Only render if favorites are enabled
+if (!FeatureFlags.FAVORITES_ENABLED) {
+  return null;
+}
+
+interface Props {
+  contentType: 'prompt' | 'persona' | 'blog';
+  contentSlug: string;
+  contentTitle: string;
+  class?: string;
+  size?: 'sm' | 'md' | 'lg';
+  showLabel?: boolean;
+}
+
+const { 
+  contentType, 
+  contentSlug, 
+  contentTitle, 
+  class: className,
+  size = 'md',
+  showLabel = false
+} = Astro.props;
+
+// Get auth state from middleware
+const { isAuthenticated } = Astro.locals;
+
+// Size configurations
+const sizes = {
+  sm: 'w-4 h-4',
+  md: 'w-5 h-5', 
+  lg: 'w-6 h-6'
+};
+
+const buttonSizes = {
+  sm: 'p-1',
+  md: 'p-2',
+  lg: 'p-3'
+};
+---
+
+{FeatureFlags.FAVORITES_ENABLED && (
+  <div class:list={["favorite-button-container", className]}>
+    {isAuthenticated ? (
+      <button
+        type="button"
+        id={`favorite-${contentSlug}`}
+        class:list={[
+          "favorite-button group relative inline-flex items-center justify-center rounded-full border-2 border-transparent transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed",
+          buttonSizes[size],
+          "hover:bg-red-50 dark:hover:bg-red-900/20 active:scale-95"
+        ]}
+        data-content-type={contentType}
+        data-content-slug={contentSlug}
+        data-content-title={contentTitle}
+        aria-label={`Toggle favorite for ${contentTitle}`}
+        title="Add to favorites"
+      >
+        <!-- Heart Icon - Filled when favorited -->
+        <Icon 
+          name="bx:heart" 
+          class:list={[
+            "heart-outline transition-all duration-200 text-gray-400 group-hover:text-red-500 dark:text-gray-500 dark:group-hover:text-red-400",
+            sizes[size]
+          ]}
+        />
+        <Icon 
+          name="bxs:heart" 
+          class:list={[
+            "heart-filled hidden transition-all duration-200 text-red-500 group-hover:text-red-600 dark:text-red-400 dark:group-hover:text-red-300",
+            sizes[size]
+          ]}
+        />
+        
+        <!-- Loading Spinner -->
+        <LoadingSpinner 
+          size="sm" 
+          class="loading-spinner hidden absolute inset-0 m-auto text-red-500" 
+        />
+        
+        {showLabel && (
+          <span class="favorite-label ml-2 text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+            Save
+          </span>
+        )}
+      </button>
+    ) : (
+      <!-- Show login prompt for unauthenticated users -->
+      <button
+        type="button"
+        class:list={[
+          "favorite-button group relative inline-flex items-center justify-center rounded-full border-2 border-transparent transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500",
+          buttonSizes[size],
+          "hover:bg-gray-50 dark:hover:bg-gray-800/50"
+        ]}
+        onclick="window.location.href='/auth/login?redirect=' + encodeURIComponent(window.location.pathname)"
+        aria-label="Sign in to add to favorites"
+        title="Sign in to add to favorites"
+      >
+        <Icon 
+          name="bx:heart" 
+          class:list={[
+            "transition-colors text-gray-400 group-hover:text-indigo-500 dark:text-gray-500 dark:group-hover:text-indigo-400",
+            sizes[size]
+          ]}
+        />
+        
+        {showLabel && (
+          <span class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+            Save
+          </span>
+        )}
+      </button>
+    )}
+
+    <!-- Toast Notification -->
+    <div 
+      id={`toast-${contentSlug}`}
+      class="toast-notification fixed top-4 right-4 z-50 hidden"
+      role="alert"
+      aria-live="polite"
+    >
+      <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 max-w-sm">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <Icon name="bx:check-circle" class="w-5 h-5 text-green-500" id={`toast-icon-${contentSlug}`} />
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-gray-900 dark:text-gray-100" id={`toast-message-${contentSlug}`}>
+              Added to favorites
+            </p>
+          </div>
+          <div class="ml-auto pl-3">
+            <button
+              type="button"
+              class="inline-flex text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              onclick={`document.getElementById('toast-${contentSlug}').classList.add('hidden')`}
+              aria-label="Close notification"
+            >
+              <Icon name="bx:x" class="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Get all favorite buttons
+    const favoriteButtons = document.querySelectorAll('.favorite-button[data-content-slug]') as NodeListOf<HTMLButtonElement>;
+    
+    if (favoriteButtons.length === 0) return;
+
+    // Load initial favorite states
+    const loadFavoriteStates = async () => {
+      try {
+        const response = await fetch('/api/favorites/list');
+        if (!response.ok) return;
+        
+        const result = await response.json();
+        if (result.success && result.favorites) {
+          favoriteButtons.forEach(button => {
+            const contentType = button.dataset.contentType;
+            const contentSlug = button.dataset.contentSlug;
+            
+            const isFavorited = result.favorites.some((fav: any) => 
+              fav.content_type === contentType && fav.content_slug === contentSlug
+            );
+            
+            updateButtonState(button, isFavorited);
+          });
+        }
+      } catch (error) {
+        console.error('Error loading favorite states:', error);
+      }
+    };
+
+    // Update button visual state
+    const updateButtonState = (button: HTMLButtonElement, isFavorited: boolean) => {
+      const heartOutline = button.querySelector('.heart-outline') as HTMLElement;
+      const heartFilled = button.querySelector('.heart-filled') as HTMLElement;
+      const label = button.querySelector('.favorite-label') as HTMLElement;
+      
+      if (heartOutline && heartFilled) {
+        heartOutline.classList.toggle('hidden', isFavorited);
+        heartFilled.classList.toggle('hidden', !isFavorited);
+      }
+      
+      if (label) {
+        label.textContent = isFavorited ? 'Saved' : 'Save';
+      }
+      
+      const title = isFavorited ? 'Remove from favorites' : 'Add to favorites';
+      button.setAttribute('title', title);
+      button.setAttribute('aria-label', `${title} for ${button.dataset.contentTitle}`);
+    };
+
+    // Show toast notification
+    const showToast = (contentSlug: string, message: string, isSuccess: boolean = true) => {
+      const toast = document.getElementById(`toast-${contentSlug}`) as HTMLElement;
+      const icon = document.getElementById(`toast-icon-${contentSlug}`) as HTMLElement;
+      const messageEl = document.getElementById(`toast-message-${contentSlug}`) as HTMLElement;
+      
+      if (toast && icon && messageEl) {
+        // Update content
+        messageEl.textContent = message;
+        icon.setAttribute('name', isSuccess ? 'bx:check-circle' : 'bx:error-circle');
+        icon.className = `w-5 h-5 ${isSuccess ? 'text-green-500' : 'text-red-500'}`;
+        
+        // Show toast
+        toast.classList.remove('hidden');
+        
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+          toast.classList.add('hidden');
+        }, 3000);
+      }
+    };
+
+    // Set loading state
+    const setLoadingState = (button: HTMLButtonElement, loading: boolean) => {
+      const heartOutline = button.querySelector('.heart-outline') as HTMLElement;
+      const heartFilled = button.querySelector('.heart-filled') as HTMLElement;
+      const spinner = button.querySelector('.loading-spinner') as HTMLElement;
+      
+      button.disabled = loading;
+      
+      if (loading) {
+        heartOutline?.classList.add('hidden');
+        heartFilled?.classList.add('hidden');
+        spinner?.classList.remove('hidden');
+      } else {
+        spinner?.classList.add('hidden');
+        // Heart icons will be shown/hidden by updateButtonState
+      }
+    };
+
+    // Handle favorite toggle
+    const toggleFavorite = async (button: HTMLButtonElement) => {
+      const contentType = button.dataset.contentType;
+      const contentSlug = button.dataset.contentSlug;
+      const contentTitle = button.dataset.contentTitle;
+      
+      if (!contentType || !contentSlug || !contentTitle) {
+        console.error('Missing required data attributes');
+        return;
+      }
+
+      setLoadingState(button, true);
+
+      try {
+        const response = await fetch('/api/favorites/toggle', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contentType,
+            contentSlug,
+            contentTitle,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          updateButtonState(button, result.isFavorited);
+          showToast(contentSlug, result.message, true);
+        } else {
+          showToast(contentSlug, result.error || 'Failed to update favorite', false);
+        }
+      } catch (error) {
+        console.error('Error toggling favorite:', error);
+        showToast(contentSlug, 'An error occurred. Please try again.', false);
+      } finally {
+        setLoadingState(button, false);
+      }
+    };
+
+    // Add event listeners
+    favoriteButtons.forEach(button => {
+      button.addEventListener('click', () => toggleFavorite(button));
+    });
+
+    // Load initial states
+    loadFavoriteStates();
+  });
+</script>
+
+<style>
+  .favorite-button-container {
+    @apply relative inline-block;
+  }
+
+  /* Button animations */
+  .favorite-button {
+    @apply transform transition-transform duration-150;
+  }
+
+  .favorite-button:active {
+    @apply scale-95;
+  }
+
+  .favorite-button:disabled {
+    @apply transform-none;
+  }
+
+  /* Heart animation */
+  .heart-filled {
+    @apply animate-pulse;
+  }
+
+  /* Toast animation */
+  .toast-notification {
+    @apply transform transition-all duration-300 ease-in-out;
+    animation: slideInRight 0.3s ease-out;
+  }
+
+  .toast-notification.hidden {
+    animation: slideOutRight 0.3s ease-in;
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideOutRight {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  /* Loading state */
+  .loading-spinner {
+    @apply text-red-500;
+  }
+
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .favorite-button-container {
+      color-scheme: dark;
+    }
+  }
+
+  /* Accessibility improvements */
+  .favorite-button:focus-visible {
+    @apply ring-2 ring-offset-2 ring-red-500;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .toast-notification {
+      @apply left-4 right-4 max-w-none;
+    }
+  }
+</style>

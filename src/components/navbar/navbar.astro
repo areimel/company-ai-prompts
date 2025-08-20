@@ -5,6 +5,7 @@ import Dropdown from "./dropdown.astro";
 import { Astronav, MenuItems, MenuIcon } from "astro-navbar";
 import ThemeToggle from "../ThemeToggle.astro";
 import LogoLink from "./LogoLink.astro";
+import AuthButton from "@components/AuthComponents/AuthButton.astro";
 import branding from "@data/branding.json";
 
 import { Picture } from "astro:assets";
@@ -97,20 +98,14 @@ const menuitems: MenuItem[] = [
               }
             </ul>
             <div class="lg:hidden flex items-center mt-3 gap-4 ">
-              {branding.navigation.primaryLinks.map((link) => (
-                <NavLink href={link.url} target={link.isExternal ? "_blank" : "_self"}>{link.title}</NavLink>
-              ))}
+              <AuthButton />
             </div>
           </MenuItems>
         </div>
       </Astronav>
       <div>
         <div class="hidden lg:flex items-center gap-4 ml-4">
-         
-          <!-- {branding.navigation.primaryLinks.map((link) => (
-            <NavLink href={link.url} target={link.isExternal ? "_blank" : "_self"}>{link.title}</NavLink>
-          ))} -->
-          
+          <AuthButton />
           <ThemeToggle />
         </div>
       </div>

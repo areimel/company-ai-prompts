@@ -1,0 +1,464 @@
+---
+import { Icon } from 'astro-icon/components';
+import Button from '@components/ui/button.astro';
+import NavLink from '@components/ui/NavLink.astro';
+import FavoriteButton from '@components/AuthComponents/FavoriteButton.astro';
+
+interface Props {
+  favorites?: Array<{
+    id: string;
+    content_type: 'prompt' | 'persona' | 'blog';
+    content_slug: string;
+    content_title: string | null;
+    created_at: string;
+  }>;
+  activeTab?: 'all' | 'prompt' | 'persona' | 'blog';
+  searchQuery?: string;
+  viewMode?: 'grid' | 'list';
+  hasMore?: boolean;
+  class?: string;
+}
+
+const {
+  favorites = [],
+  activeTab = 'all',
+  searchQuery = '',
+  viewMode = 'grid',
+  hasMore = false,
+  class: className,
+} = Astro.props;
+
+// Filter favorites based on active tab and search query
+const filteredFavorites = favorites.filter(favorite => {
+  const matchesTab = activeTab === 'all' || favorite.content_type === activeTab;
+  const matchesSearch = !searchQuery || 
+    (favorite.content_title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+     favorite.content_slug.toLowerCase().includes(searchQuery.toLowerCase()));
+  return matchesTab && matchesSearch;
+});
+
+// Get content URL
+const getContentUrl = (type: string, slug: string) => {
+  switch (type) {
+    case 'prompt': return `/prompts/${slug}`;
+    case 'persona': return `/ai-personas/${slug}`;
+    case 'blog': return `/blog/${slug}`;
+    default: return '#';
+  }
+};
+
+// Get content type display info
+const getContentTypeInfo = (type: string) => {
+  switch (type) {
+    case 'prompt':
+      return {
+        name: 'Prompt',
+        icon: 'boxicons:bx-code-alt',
+        bgColor: 'bg-blue-50 dark:bg-blue-900/20',
+        textColor: 'text-blue-600 dark:text-blue-400',
+        borderColor: 'border-blue-200 dark:border-blue-800'
+      };
+    case 'persona':
+      return {
+        name: 'AI Persona',
+        icon: 'boxicons:bx-user-circle',
+        bgColor: 'bg-green-50 dark:bg-green-900/20',
+        textColor: 'text-green-600 dark:text-green-400',
+        borderColor: 'border-green-200 dark:border-green-800'
+      };
+    case 'blog':
+      return {
+        name: 'Blog Post',
+        icon: 'boxicons:bx-book-reader',
+        bgColor: 'bg-purple-50 dark:bg-purple-900/20',
+        textColor: 'text-purple-600 dark:text-purple-400',
+        borderColor: 'border-purple-200 dark:border-purple-800'
+      };
+    default:
+      return {
+        name: type,
+        icon: 'boxicons:bx-file',
+        bgColor: 'bg-gray-50 dark:bg-gray-900/20',
+        textColor: 'text-gray-600 dark:text-gray-400',
+        borderColor: 'border-gray-200 dark:border-gray-800'
+      };
+  }
+};
+
+// Format date
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('en-US', { 
+    year: 'numeric',
+    month: 'short', 
+    day: 'numeric'
+  });
+};
+---
+
+<div class:list={["space-y-6", className]}>
+  <!-- Controls Bar -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
+      <!-- Tab Filters -->
+      <div class="flex flex-wrap gap-2">
+        <button
+          class:list={[
+            "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+            activeTab === 'all' 
+              ? "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800"
+              : "bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
+          ]}
+          data-tab="all"
+        >
+          All ({favorites.length})
+        </button>
+        <button
+          class:list={[
+            "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+            activeTab === 'prompt' 
+              ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
+              : "bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
+          ]}
+          data-tab="prompt"
+        >
+          Prompts ({favorites.filter(f => f.content_type === 'prompt').length})
+        </button>
+        <button
+          class:list={[
+            "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+            activeTab === 'persona' 
+              ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800"
+              : "bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
+          ]}
+          data-tab="persona"
+        >
+          Personas ({favorites.filter(f => f.content_type === 'persona').length})
+        </button>
+        <button
+          class:list={[
+            "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+            activeTab === 'blog' 
+              ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800"
+              : "bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600"
+          ]}
+          data-tab="blog"
+        >
+          Blog ({favorites.filter(f => f.content_type === 'blog').length})
+        </button>
+      </div>
+
+      <!-- Search and View Controls -->
+      <div class="flex items-center space-x-3">
+        <!-- Search -->
+        <div class="relative">
+          <Icon name="boxicons:bx-search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            id="favorites-search"
+            placeholder="Search favorites..."
+            value={searchQuery}
+            class="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 w-64"
+          />
+        </div>
+
+        <!-- View Mode Toggle -->
+        <div class="flex border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+          <button
+            id="grid-view"
+            class:list={[
+              "px-3 py-2 text-sm transition-colors",
+              viewMode === 'grid'
+                ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400"
+                : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600"
+            ]}
+            title="Grid view"
+          >
+            <Icon name="boxicons:bx-grid-alt" class="w-4 h-4" />
+          </button>
+          <button
+            id="list-view"
+            class:list={[
+              "px-3 py-2 text-sm border-l border-gray-300 dark:border-gray-600 transition-colors",
+              viewMode === 'list'
+                ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400"
+                : "bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600"
+            ]}
+            title="List view"
+          >
+            <Icon name="boxicons:bx-list-ul" class="w-4 h-4" />
+          </button>
+        </div>
+
+        <!-- Export Button -->
+        <Button
+          type="button"
+          id="export-favorites"
+          style="outline"
+          class="px-3 py-2"
+          title="Export favorites"
+        >
+          <Icon name="boxicons:bx-download" class="w-4 h-4" />
+        </Button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Favorites Content -->
+  <div id="favorites-content">
+    {filteredFavorites.length > 0 ? (
+      <div>
+        <!-- Grid View -->
+        <div 
+          id="grid-container"
+          class:list={[
+            "grid gap-6",
+            viewMode === 'grid' ? "block" : "hidden",
+            "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+          ]}
+        >
+          {filteredFavorites.map((favorite) => {
+            const typeInfo = getContentTypeInfo(favorite.content_type);
+            return (
+              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow">
+                <div class="p-6">
+                  <div class="flex items-start justify-between mb-4">
+                    <div class:list={["inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium", typeInfo.bgColor, typeInfo.textColor]}>
+                      <Icon name={typeInfo.icon} class="w-3 h-3 mr-1" />
+                      {typeInfo.name}
+                    </div>
+                    <FavoriteButton
+                      contentType={favorite.content_type}
+                      contentSlug={favorite.content_slug}
+                      contentTitle={favorite.content_title || favorite.content_slug}
+                      size="sm"
+                    />
+                  </div>
+                  
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                    <NavLink 
+                      href={getContentUrl(favorite.content_type, favorite.content_slug)}
+                      class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                    >
+                      {favorite.content_title || favorite.content_slug}
+                    </NavLink>
+                  </h3>
+                  
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Saved on {formatDate(favorite.created_at)}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <!-- List View -->
+        <div 
+          id="list-container"
+          class:list={[
+            "bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700",
+            viewMode === 'list' ? "block" : "hidden"
+          ]}
+        >
+          {filteredFavorites.map((favorite) => {
+            const typeInfo = getContentTypeInfo(favorite.content_type);
+            return (
+              <div class="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-4 flex-1 min-w-0">
+                    <div class:list={["flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium", typeInfo.bgColor, typeInfo.textColor]}>
+                      <Icon name={typeInfo.icon} class="w-3 h-3 mr-1" />
+                      {typeInfo.name}
+                    </div>
+                    
+                    <div class="flex-1 min-w-0">
+                      <h3 class="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                        <NavLink 
+                          href={getContentUrl(favorite.content_type, favorite.content_slug)}
+                          class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                        >
+                          {favorite.content_title || favorite.content_slug}
+                        </NavLink>
+                      </h3>
+                      <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Saved on {formatDate(favorite.created_at)}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center space-x-3">
+                    <NavLink 
+                      href={getContentUrl(favorite.content_type, favorite.content_slug)}
+                      class="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 text-sm font-medium"
+                    >
+                      View
+                    </NavLink>
+                    <FavoriteButton
+                      contentType={favorite.content_type}
+                      contentSlug={favorite.content_slug}
+                      contentTitle={favorite.content_title || favorite.content_slug}
+                      size="sm"
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <!-- Load More Button -->
+        {hasMore && (
+          <div class="text-center mt-8">
+            <Button
+              type="button"
+              id="load-more"
+              style="outline"
+              class="px-6 py-3"
+            >
+              <span id="load-more-text">Load More</span>
+              <div id="load-more-loading" class="hidden flex items-center">
+                <Icon name="boxicons:bx-loader-alt" class="w-4 h-4 mr-2 animate-spin" />
+                Loading...
+              </div>
+            </Button>
+          </div>
+        )}
+      </div>
+    ) : (
+      <!-- Empty State -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
+        <Icon name="boxicons:bx-heart" class="w-16 h-16 mx-auto text-gray-400 mb-4" />
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+          {searchQuery ? 'No matching favorites found' : activeTab === 'all' ? 'No favorites yet' : `No ${activeTab === 'prompt' ? 'prompts' : activeTab === 'persona' ? 'personas' : 'blog posts'} saved`}
+        </h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+          {searchQuery 
+            ? 'Try adjusting your search terms or browse different categories.' 
+            : activeTab === 'all' 
+              ? 'Start exploring and save your favorite prompts, AI personas, and blog posts to see them here.'
+              : `Browse our collection to find and save ${activeTab === 'prompt' ? 'prompts' : activeTab === 'persona' ? 'AI personas' : 'blog posts'} you love.`
+          }
+        </p>
+        <div class="space-x-3">
+          {!searchQuery && (
+            <>
+              <NavLink href="/prompts" class="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 font-medium">
+                Browse Prompts
+              </NavLink>
+              <NavLink href="/ai-personas" class="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 font-medium">
+                Explore Personas
+              </NavLink>
+              <NavLink href="/blog" class="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 font-medium">
+                Read Blog
+              </NavLink>
+            </>
+          )}
+        </div>
+      </div>
+    )}
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching
+    const tabButtons = document.querySelectorAll('[data-tab]');
+    tabButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const tab = this.getAttribute('data-tab');
+        const url = new URL(window.location);
+        if (tab === 'all') {
+          url.searchParams.delete('tab');
+        } else {
+          url.searchParams.set('tab', tab);
+        }
+        window.location.href = url.toString();
+      });
+    });
+
+    // Search functionality
+    const searchInput = document.getElementById('favorites-search') as HTMLInputElement;
+    let searchTimeout: ReturnType<typeof setTimeout>;
+
+    searchInput?.addEventListener('input', function() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        const url = new URL(window.location);
+        if (this.value.trim()) {
+          url.searchParams.set('search', this.value.trim());
+        } else {
+          url.searchParams.delete('search');
+        }
+        window.location.href = url.toString();
+      }, 500);
+    });
+
+    // View mode switching
+    const gridViewBtn = document.getElementById('grid-view');
+    const listViewBtn = document.getElementById('list-view');
+    const gridContainer = document.getElementById('grid-container');
+    const listContainer = document.getElementById('list-container');
+
+    gridViewBtn?.addEventListener('click', function() {
+      const url = new URL(window.location);
+      url.searchParams.delete('view');
+      window.location.href = url.toString();
+    });
+
+    listViewBtn?.addEventListener('click', function() {
+      const url = new URL(window.location);
+      url.searchParams.set('view', 'list');
+      window.location.href = url.toString();
+    });
+
+    // Export functionality
+    const exportBtn = document.getElementById('export-favorites');
+    exportBtn?.addEventListener('click', async function() {
+      try {
+        const response = await fetch('/api/favorites/export');
+        const result = await response.json();
+
+        if (result.success) {
+          const dataStr = JSON.stringify(result.data, null, 2);
+          const dataBlob = new Blob([dataStr], { type: 'application/json' });
+          const url = URL.createObjectURL(dataBlob);
+          
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `favorites-export-${new Date().toISOString().split('T')[0]}.json`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          URL.revokeObjectURL(url);
+        }
+      } catch (error) {
+        console.error('Export failed:', error);
+      }
+    });
+
+    // Load more functionality
+    const loadMoreBtn = document.getElementById('load-more');
+    const loadMoreText = document.getElementById('load-more-text');
+    const loadMoreLoading = document.getElementById('load-more-loading');
+
+    loadMoreBtn?.addEventListener('click', async function() {
+      loadMoreText?.classList.add('hidden');
+      loadMoreLoading?.classList.remove('hidden');
+      loadMoreBtn.setAttribute('disabled', 'true');
+
+      try {
+        const url = new URL(window.location);
+        const currentPage = parseInt(url.searchParams.get('page') || '1');
+        url.searchParams.set('page', (currentPage + 1).toString());
+        window.location.href = url.toString();
+      } catch (error) {
+        console.error('Load more failed:', error);
+      } finally {
+        loadMoreText?.classList.remove('hidden');
+        loadMoreLoading?.classList.add('hidden');
+        loadMoreBtn?.removeAttribute('disabled');
+      }
+    });
+  });
+</script>

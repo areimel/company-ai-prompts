@@ -1,0 +1,524 @@
+---
+import { FeatureFlags } from '@lib/feature-flags';
+import { Icon } from 'astro-icon/components';
+import LoadingSpinner from '@components/ui/LoadingSpinner.astro';
+import SocialAuth from './SocialAuth.astro';
+
+// Only render if auth is enabled
+if (!FeatureFlags.AUTH_ENABLED) {
+  return null;
+}
+
+interface Props {
+  redirectTo?: string;
+  class?: string;
+}
+
+const { redirectTo = '/', class: className } = Astro.props;
+---
+
+{FeatureFlags.AUTH_ENABLED && (
+  <div class:list={["register-form-container", className]}>
+    <form id="register-form" class="space-y-6" novalidate>
+      <!-- Full Name Field -->
+      <div>
+        <label for="fullName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Full Name
+        </label>
+        <div class="relative">
+          <input
+            type="text"
+            id="fullName"
+            name="fullName"
+            autocomplete="name"
+            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg outline-none transition-colors focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 dark:focus:ring-indigo-900/20"
+            placeholder="Enter your full name"
+            aria-describedby="fullName-error"
+          />
+          <Icon name="bx:user" class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        </div>
+        <div id="fullName-error" class="error-message text-red-500 text-sm mt-1 hidden" role="alert"></div>
+      </div>
+
+      <!-- Email Field -->
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Email Address <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            autocomplete="email"
+            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg outline-none transition-colors focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 dark:focus:ring-indigo-900/20"
+            placeholder="Enter your email"
+            aria-describedby="email-error"
+          />
+          <Icon name="bx:envelope" class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        </div>
+        <div id="email-error" class="error-message text-red-500 text-sm mt-1 hidden" role="alert"></div>
+      </div>
+
+      <!-- Password Field -->
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Password <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            autocomplete="new-password"
+            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg outline-none transition-colors focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 dark:focus:ring-indigo-900/20"
+            placeholder="Create a password"
+            aria-describedby="password-error password-strength"
+          />
+          <button
+            type="button"
+            id="toggle-password"
+            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            aria-label="Toggle password visibility"
+          >
+            <Icon name="bx:eye" class="w-5 h-5" id="eye-open" />
+            <Icon name="bx:eye-slash" class="w-5 h-5 hidden" id="eye-closed" />
+          </button>
+        </div>
+        <div id="password-error" class="error-message text-red-500 text-sm mt-1 hidden" role="alert"></div>
+        
+        <!-- Password Strength Indicator -->
+        <div id="password-strength" class="mt-2" aria-live="polite">
+          <div class="flex space-x-1 mb-1">
+            <div class="h-1 flex-1 bg-gray-200 rounded" id="strength-bar-1"></div>
+            <div class="h-1 flex-1 bg-gray-200 rounded" id="strength-bar-2"></div>
+            <div class="h-1 flex-1 bg-gray-200 rounded" id="strength-bar-3"></div>
+            <div class="h-1 flex-1 bg-gray-200 rounded" id="strength-bar-4"></div>
+          </div>
+          <p id="strength-text" class="text-xs text-gray-500">Password strength: Not entered</p>
+          <ul class="text-xs text-gray-500 mt-1 space-y-1">
+            <li id="length-check" class="flex items-center">
+              <Icon name="bx:x" class="w-3 h-3 text-red-500 mr-1" id="length-icon" />
+              At least 8 characters
+            </li>
+            <li id="uppercase-check" class="flex items-center">
+              <Icon name="bx:x" class="w-3 h-3 text-red-500 mr-1" id="uppercase-icon" />
+              One uppercase letter
+            </li>
+            <li id="lowercase-check" class="flex items-center">
+              <Icon name="bx:x" class="w-3 h-3 text-red-500 mr-1" id="lowercase-icon" />
+              One lowercase letter
+            </li>
+            <li id="number-check" class="flex items-center">
+              <Icon name="bx:x" class="w-3 h-3 text-red-500 mr-1" id="number-icon" />
+              One number
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div>
+        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Confirm Password <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            required
+            autocomplete="new-password"
+            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg outline-none transition-colors focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 dark:focus:ring-indigo-900/20"
+            placeholder="Confirm your password"
+            aria-describedby="confirmPassword-error"
+          />
+          <button
+            type="button"
+            id="toggle-confirm-password"
+            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            aria-label="Toggle confirm password visibility"
+          >
+            <Icon name="bx:eye" class="w-5 h-5" id="confirm-eye-open" />
+            <Icon name="bx:eye-slash" class="w-5 h-5 hidden" id="confirm-eye-closed" />
+          </button>
+        </div>
+        <div id="confirmPassword-error" class="error-message text-red-500 text-sm mt-1 hidden" role="alert"></div>
+      </div>
+
+      <!-- Terms of Service -->
+      <div class="flex items-start">
+        <input
+          id="terms"
+          name="terms"
+          type="checkbox"
+          required
+          class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded mt-1"
+        />
+        <label for="terms" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+          I agree to the 
+          <a href="/terms" class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors" target="_blank">
+            Terms of Service
+          </a> 
+          and 
+          <a href="/privacy" class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors" target="_blank">
+            Privacy Policy
+          </a>
+          <span class="text-red-500">*</span>
+        </label>
+      </div>
+      <div id="terms-error" class="error-message text-red-500 text-sm hidden" role="alert"></div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        id="register-submit"
+        class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        aria-describedby="form-error"
+      >
+        <span id="register-text">Create Account</span>
+        <LoadingSpinner size="sm" class="ml-2 hidden" id="register-spinner" />
+      </button>
+
+      <!-- Form Error Message -->
+      <div id="form-error" class="error-message text-red-500 text-sm text-center hidden" role="alert"></div>
+      
+      <!-- Success Message -->
+      <div id="form-success" class="text-green-500 text-sm text-center hidden" role="alert"></div>
+    </form>
+
+    <!-- Social Authentication -->
+    <div class="mt-6">
+      <div class="relative">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+          <span class="px-2 bg-white dark:bg-gray-900 text-gray-500">Or sign up with</span>
+        </div>
+      </div>
+      <SocialAuth redirectTo={redirectTo} />
+    </div>
+
+    <!-- Login Link -->
+    <div class="mt-6 text-center">
+      <p class="text-sm text-gray-600 dark:text-gray-400">
+        Already have an account?
+        <a
+          href="/auth/login"
+          class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
+        >
+          Sign in
+        </a>
+      </p>
+    </div>
+  </div>
+)}
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('register-form') as HTMLFormElement;
+    const submitButton = document.getElementById('register-submit') as HTMLButtonElement;
+    const registerText = document.getElementById('register-text') as HTMLSpanElement;
+    const registerSpinner = document.getElementById('register-spinner') as HTMLElement;
+    
+    // Toggle password visibility
+    const setupPasswordToggle = (toggleId: string, passwordId: string, eyeOpenId: string, eyeClosedId: string) => {
+      const toggleButton = document.getElementById(toggleId) as HTMLButtonElement;
+      const passwordInput = document.getElementById(passwordId) as HTMLInputElement;
+      const eyeOpen = document.getElementById(eyeOpenId) as HTMLElement;
+      const eyeClosed = document.getElementById(eyeClosedId) as HTMLElement;
+
+      toggleButton?.addEventListener('click', () => {
+        const isPassword = passwordInput.type === 'password';
+        passwordInput.type = isPassword ? 'text' : 'password';
+        eyeOpen.classList.toggle('hidden', isPassword);
+        eyeClosed.classList.toggle('hidden', !isPassword);
+      });
+    };
+
+    setupPasswordToggle('toggle-password', 'password', 'eye-open', 'eye-closed');
+    setupPasswordToggle('toggle-confirm-password', 'confirmPassword', 'confirm-eye-open', 'confirm-eye-closed');
+
+    if (!form) return;
+
+    // Form inputs
+    const fullNameInput = document.getElementById('fullName') as HTMLInputElement;
+    const emailInput = document.getElementById('email') as HTMLInputElement;
+    const passwordInput = document.getElementById('password') as HTMLInputElement;
+    const confirmPasswordInput = document.getElementById('confirmPassword') as HTMLInputElement;
+    const termsInput = document.getElementById('terms') as HTMLInputElement;
+
+    // Password strength elements
+    const strengthBars = [1, 2, 3, 4].map(i => document.getElementById(`strength-bar-${i}`) as HTMLElement);
+    const strengthText = document.getElementById('strength-text') as HTMLElement;
+    const lengthCheck = document.getElementById('length-icon') as HTMLElement;
+    const uppercaseCheck = document.getElementById('uppercase-icon') as HTMLElement;
+    const lowercaseCheck = document.getElementById('lowercase-icon') as HTMLElement;
+    const numberCheck = document.getElementById('number-icon') as HTMLElement;
+
+    // Validation functions
+    const validateEmail = (email: string): boolean => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    };
+
+    const checkPasswordStrength = (password: string) => {
+      const hasLength = password.length >= 8;
+      const hasUppercase = /[A-Z]/.test(password);
+      const hasLowercase = /[a-z]/.test(password);
+      const hasNumber = /\d/.test(password);
+
+      const checks = [hasLength, hasUppercase, hasLowercase, hasNumber];
+      const strength = checks.filter(Boolean).length;
+
+      // Update visual indicators
+      const updateCheck = (element: HTMLElement, passed: boolean) => {
+        const iconElement = element.querySelector('.w-3') as HTMLElement;
+        if (iconElement) {
+          iconElement.setAttribute('name', passed ? 'bx:check' : 'bx:x');
+          iconElement.className = `w-3 h-3 mr-1 ${passed ? 'text-green-500' : 'text-red-500'}`;
+        }
+      };
+
+      updateCheck(lengthCheck.parentElement as HTMLElement, hasLength);
+      updateCheck(uppercaseCheck.parentElement as HTMLElement, hasUppercase);
+      updateCheck(lowercaseCheck.parentElement as HTMLElement, hasLowercase);
+      updateCheck(numberCheck.parentElement as HTMLElement, hasNumber);
+
+      // Update strength bars
+      const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500'];
+      const strengthLabels = ['Weak', 'Fair', 'Good', 'Strong'];
+
+      strengthBars.forEach((bar, index) => {
+        bar.className = `h-1 flex-1 rounded ${index < strength ? colors[strength - 1] || 'bg-gray-200' : 'bg-gray-200'}`;
+      });
+
+      strengthText.textContent = password ? `Password strength: ${strengthLabels[strength - 1] || 'Weak'}` : 'Password strength: Not entered';
+
+      return { strength, hasLength, hasUppercase, hasLowercase, hasNumber };
+    };
+
+    const showError = (fieldId: string, message: string) => {
+      const field = document.getElementById(fieldId) as HTMLInputElement;
+      const errorElement = document.getElementById(`${fieldId}-error`) as HTMLElement;
+      
+      field.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-100');
+      field.classList.remove('border-gray-300', 'focus:border-indigo-500', 'focus:ring-indigo-100');
+      errorElement.textContent = message;
+      errorElement.classList.remove('hidden');
+    };
+
+    const clearError = (fieldId: string) => {
+      const field = document.getElementById(fieldId) as HTMLInputElement;
+      const errorElement = document.getElementById(`${fieldId}-error`) as HTMLElement;
+      
+      field.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-100');
+      field.classList.add('border-gray-300', 'focus:border-indigo-500', 'focus:ring-indigo-100');
+      errorElement.classList.add('hidden');
+    };
+
+    const showFormError = (message: string) => {
+      const errorElement = document.getElementById('form-error') as HTMLElement;
+      errorElement.textContent = message;
+      errorElement.classList.remove('hidden');
+    };
+
+    const clearFormMessages = () => {
+      const errorElement = document.getElementById('form-error') as HTMLElement;
+      const successElement = document.getElementById('form-success') as HTMLElement;
+      errorElement.classList.add('hidden');
+      successElement.classList.add('hidden');
+    };
+
+    // Real-time validation
+    fullNameInput?.addEventListener('blur', () => {
+      const fullName = fullNameInput.value.trim();
+      if (fullName && (fullName.length < 2 || fullName.length > 100)) {
+        showError('fullName', 'Full name must be between 2 and 100 characters');
+      } else {
+        clearError('fullName');
+      }
+    });
+
+    emailInput?.addEventListener('blur', () => {
+      const email = emailInput.value.trim();
+      if (email && !validateEmail(email)) {
+        showError('email', 'Please enter a valid email address');
+      } else {
+        clearError('email');
+      }
+    });
+
+    passwordInput?.addEventListener('input', () => {
+      const password = passwordInput.value;
+      checkPasswordStrength(password);
+      
+      // Validate confirm password if it has a value
+      if (confirmPasswordInput.value) {
+        if (password !== confirmPasswordInput.value) {
+          showError('confirmPassword', 'Passwords do not match');
+        } else {
+          clearError('confirmPassword');
+        }
+      }
+    });
+
+    confirmPasswordInput?.addEventListener('blur', () => {
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+      
+      if (confirmPassword && password !== confirmPassword) {
+        showError('confirmPassword', 'Passwords do not match');
+      } else {
+        clearError('confirmPassword');
+      }
+    });
+
+    // Form submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearFormMessages();
+
+      const formData = new FormData(form);
+      const fullName = formData.get('fullName') as string;
+      const email = formData.get('email') as string;
+      const password = formData.get('password') as string;
+      const confirmPassword = formData.get('confirmPassword') as string;
+      const terms = formData.get('terms') as string;
+
+      // Validate form
+      let isValid = true;
+
+      if (fullName && (fullName.trim().length < 2 || fullName.trim().length > 100)) {
+        showError('fullName', 'Full name must be between 2 and 100 characters');
+        isValid = false;
+      } else {
+        clearError('fullName');
+      }
+
+      if (!email || !email.trim()) {
+        showError('email', 'Email is required');
+        isValid = false;
+      } else if (!validateEmail(email)) {
+        showError('email', 'Please enter a valid email address');
+        isValid = false;
+      } else {
+        clearError('email');
+      }
+
+      if (!password) {
+        showError('password', 'Password is required');
+        isValid = false;
+      } else if (password.length < 8) {
+        showError('password', 'Password must be at least 8 characters long');
+        isValid = false;
+      } else {
+        clearError('password');
+      }
+
+      if (!confirmPassword) {
+        showError('confirmPassword', 'Please confirm your password');
+        isValid = false;
+      } else if (password !== confirmPassword) {
+        showError('confirmPassword', 'Passwords do not match');
+        isValid = false;
+      } else {
+        clearError('confirmPassword');
+      }
+
+      if (!terms) {
+        const termsError = document.getElementById('terms-error') as HTMLElement;
+        termsError.textContent = 'You must agree to the Terms of Service and Privacy Policy';
+        termsError.classList.remove('hidden');
+        isValid = false;
+      } else {
+        const termsError = document.getElementById('terms-error') as HTMLElement;
+        termsError.classList.add('hidden');
+      }
+
+      if (!isValid) {
+        return;
+      }
+
+      // Set loading state
+      submitButton.disabled = true;
+      registerText.textContent = 'Creating Account...';
+      registerSpinner.classList.remove('hidden');
+
+      try {
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            email, 
+            password, 
+            confirmPassword,
+            fullName: fullName?.trim() || undefined 
+          }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          // Show success message
+          const successElement = document.getElementById('form-success') as HTMLElement;
+          successElement.textContent = result.message || 'Account created successfully! Please check your email to verify your account.';
+          successElement.classList.remove('hidden');
+
+          // Reset form
+          form.reset();
+          
+          // Redirect after a delay
+          setTimeout(() => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectTo = urlParams.get('redirect') || '${redirectTo}';
+            window.location.href = `/auth/login?redirect=${encodeURIComponent(redirectTo)}`;
+          }, 3000);
+        } else {
+          showFormError(result.error || 'Registration failed. Please try again.');
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        showFormError('An error occurred. Please try again.');
+      } finally {
+        // Reset loading state
+        submitButton.disabled = false;
+        registerText.textContent = 'Create Account';
+        registerSpinner.classList.add('hidden');
+      }
+    });
+  });
+</script>
+
+<style>
+  .register-form-container {
+    @apply max-w-md mx-auto;
+  }
+
+  /* Focus styles for better accessibility */
+  input:focus {
+    @apply outline-none;
+  }
+
+  /* Error state styles */
+  .error-message {
+    @apply text-sm mt-1;
+  }
+
+  /* Loading state styles */
+  button:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .register-form-container {
+      color-scheme: dark;
+    }
+  }
+</style>

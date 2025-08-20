@@ -1,0 +1,219 @@
+---
+import Layout from '@layouts/Layout.astro';
+import Container from '@components/container.astro';
+import Sectionhead from '@components/sectionhead.astro';
+import FavoriteButton from '@components/AuthComponents/FavoriteButton.astro';
+import { FeatureFlags } from '@lib/feature-flags';
+
+// This is a demo page to showcase the FavoriteButton component
+const title = 'Auth Components Demo';
+const description = 'Demonstration of authentication UI components including the FavoriteButton.';
+---
+
+<Layout title={title} description={description}>
+  <Container>
+    <Sectionhead>
+      <Fragment slot="title">{title}</Fragment>
+      <Fragment slot="desc">{description}</Fragment>
+    </Sectionhead>
+
+    <div class="max-w-4xl mx-auto space-y-12">
+      
+      <!-- Authentication Status -->
+      <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Authentication Status</h2>
+        <div class="space-y-2 text-sm">
+          <p>
+            <span class="font-medium">Auth Enabled:</span> 
+            <span class={FeatureFlags.AUTH_ENABLED ? "text-green-600" : "text-red-600"}>
+              {FeatureFlags.AUTH_ENABLED ? "Yes" : "No"}
+            </span>
+          </p>
+          <p>
+            <span class="font-medium">Favorites Enabled:</span> 
+            <span class={FeatureFlags.FAVORITES_ENABLED ? "text-green-600" : "text-red-600"}>
+              {FeatureFlags.FAVORITES_ENABLED ? "Yes" : "No"}
+            </span>
+          </p>
+          <p>
+            <span class="font-medium">Social Auth Enabled:</span> 
+            <span class={FeatureFlags.SOCIAL_AUTH_ENABLED ? "text-green-600" : "text-red-600"}>
+              {FeatureFlags.SOCIAL_AUTH_ENABLED ? "Yes" : "No"}
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <!-- FavoriteButton Examples -->
+      {FeatureFlags.FAVORITES_ENABLED && (
+        <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">FavoriteButton Examples</h2>
+          
+          <div class="space-y-8">
+            <!-- Example 1: Small size -->
+            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <div>
+                <h3 class="font-medium text-gray-900 dark:text-white">Sample Prompt (Small)</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">A sample prompt for testing favorites functionality</p>
+              </div>
+              <FavoriteButton 
+                contentType="prompt"
+                contentSlug="sample-prompt-small"
+                contentTitle="Sample Prompt (Small)"
+                size="sm"
+              />
+            </div>
+
+            <!-- Example 2: Medium size with label -->
+            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <div>
+                <h3 class="font-medium text-gray-900 dark:text-white">Sample Persona (Medium)</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">A sample AI persona for testing favorites with labels</p>
+              </div>
+              <FavoriteButton 
+                contentType="persona"
+                contentSlug="sample-persona-medium"
+                contentTitle="Sample Persona (Medium)"
+                size="md"
+                showLabel={true}
+              />
+            </div>
+
+            <!-- Example 3: Large size -->
+            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <div>
+                <h3 class="font-medium text-gray-900 dark:text-white">Sample Blog Post (Large)</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">A sample blog post for testing larger favorite buttons</p>
+              </div>
+              <FavoriteButton 
+                contentType="blog"
+                contentSlug="sample-blog-large"
+                contentTitle="Sample Blog Post (Large)"
+                size="lg"
+                showLabel={true}
+              />
+            </div>
+          </div>
+
+          <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <h4 class="font-medium text-blue-900 dark:text-blue-200 mb-2">How it works:</h4>
+            <ul class="text-sm text-blue-800 dark:text-blue-300 space-y-1">
+              <li>• If you're logged in, clicking toggles the favorite status</li>
+              <li>• If you're not logged in, clicking redirects to the login page</li>
+              <li>• The component loads your existing favorites on page load</li>
+              <li>• Toast notifications show feedback for favorite actions</li>
+            </ul>
+          </div>
+        </div>
+      )}
+
+      <!-- Navigation Links -->
+      <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Authentication Pages</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a 
+            href="/auth/login" 
+            class="block p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          >
+            <h3 class="font-medium text-gray-900 dark:text-white">Login Page</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Sign in with email/password or social auth</p>
+          </a>
+          
+          <a 
+            href="/auth/register" 
+            class="block p-4 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          >
+            <h3 class="font-medium text-gray-900 dark:text-white">Register Page</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Create account with validation and password strength</p>
+          </a>
+        </div>
+
+        {!FeatureFlags.AUTH_ENABLED && (
+          <div class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+            <p class="text-sm text-yellow-800 dark:text-yellow-200">
+              <strong>Note:</strong> Authentication is currently disabled. Set <code>ENABLE_USER_AUTH=true</code> in your environment to enable these features.
+            </p>
+          </div>
+        )}
+      </div>
+
+      <!-- Component Features -->
+      <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Component Features</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="font-medium text-gray-900 dark:text-white mb-3">LoginForm.astro</h3>
+            <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+              <li>• Email and password validation</li>
+              <li>• Password visibility toggle</li>
+              <li>• Remember me checkbox</li>
+              <li>• Forgot password link</li>
+              <li>• Social authentication</li>
+              <li>• Loading states and error handling</li>
+              <li>• Responsive design</li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 class="font-medium text-gray-900 dark:text-white mb-3">RegisterForm.astro</h3>
+            <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+              <li>• Form validation with real-time feedback</li>
+              <li>• Password strength indicator</li>
+              <li>• Password confirmation</li>
+              <li>• Terms of service acceptance</li>
+              <li>• Social registration</li>
+              <li>• Loading states and error handling</li>
+              <li>• Accessible form design</li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 class="font-medium text-gray-900 dark:text-white mb-3">SocialAuth.astro</h3>
+            <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+              <li>• Google and GitHub integration</li>
+              <li>• OAuth flow handling</li>
+              <li>• Error state management</li>
+              <li>• Loading indicators</li>
+              <li>• Responsive button layout</li>
+              <li>• Redirect preservation</li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 class="font-medium text-gray-900 dark:text-white mb-3">FavoriteButton.astro</h3>
+            <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+              <li>• Toggle favorites functionality</li>
+              <li>• Authentication state awareness</li>
+              <li>• Multiple sizes (sm, md, lg)</li>
+              <li>• Optional labels</li>
+              <li>• Toast notifications</li>
+              <li>• Loading states</li>
+              <li>• Heart animation effects</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Container>
+</Layout>
+
+<style>
+  /* Custom page styles */
+  .container {
+    @apply pt-12 pb-16;
+  }
+
+  /* Code styling */
+  code {
+    @apply bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono;
+  }
+
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    body {
+      color-scheme: dark;
+    }
+  }
+</style>

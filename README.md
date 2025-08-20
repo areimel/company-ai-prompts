@@ -13,6 +13,7 @@ Built with modern web technologies for performance and ease of customization, th
 *   **Blog & Resources**: Educational content about AI prompt engineering and best practices
 *   **Mobile-Responsive Design**: Optimized experience across all devices
 *   **Template System**: Create your own prompt templates for team consistency
+*   **User Authentication**: Optional user accounts with profiles and favorites
 *   **Free & Open Source**: Available for personal and commercial use
 
 ## Live Features
@@ -24,6 +25,8 @@ Built with modern web technologies for performance and ease of customization, th
 *   **Contact Forms**: Community engagement and contribution system
 *   **Newsletter Integration**: Stay updated with latest prompts and techniques
 *   **Social Media Integration**: Connect across platforms
+*   **User Authentication**: Registration, login, and profile management
+*   **Favorites System**: Save and organize favorite prompts and personas
 *   **Legal Pages**: Privacy policy, terms, and CCPA compliance
 
 ## Technical Stack
@@ -32,9 +35,10 @@ Built with modern web technologies for performance and ease of customization, th
 *   **Styling**: [TailwindCSS 3.4+](https://tailwindcss.com/) - Utility-first CSS framework
 *   **Content Management**: [Astro Content Collections](https://docs.astro.build/en/guides/content-collections/) with TypeScript schemas
 *   **AI Integration**: Google Gemini API integration for dynamic features
+*   **Authentication**: [Supabase Auth](https://supabase.com/auth) with PostgreSQL backend
 *   **Icons**: Astro Icon with Iconify icons (Boxicons, Simple Icons)
 *   **Typography**: Inter Variable & Bricolage Grotesque fonts
-*   **Testing**: Vitest for unit testing
+*   **Testing**: Vitest for unit testing with comprehensive auth test coverage
 *   **Deployment**: Netlify-ready with optimized build process
 
 ## Getting Started
@@ -64,6 +68,32 @@ Built with modern web technologies for performance and ease of customization, th
 
 Visit `http://localhost:4321` to view your site.
 
+## Authentication Setup (Optional)
+
+The application includes an optional user authentication system powered by Supabase. To enable authentication features:
+
+### Quick Setup
+
+1. **Create a Supabase project** at [supabase.com](https://supabase.com)
+2. **Set environment variables** in `.env`:
+   ```bash
+   ENABLE_USER_AUTH=true
+   SUPABASE_URL=https://your-project.supabase.co
+   SUPABASE_ANON_KEY=your-anon-key
+   ```
+3. **Run database setup** using the SQL scripts in `src/lib/database/`
+4. **Restart development server**: `pnpm dev`
+
+### Features When Enabled
+- User registration and login
+- Social authentication (Google, GitHub, Discord, Twitter)
+- User profiles and dashboards
+- Favorites system for prompts and personas
+- Personalized content recommendations
+
+### Complete Setup Guide
+For detailed setup instructions, see [`docs/authentication-setup.md`](docs/authentication-setup.md)
+
 ## Available Commands
 
 *   **`pnpm dev`**: Start development server at `localhost:4321`
@@ -72,6 +102,7 @@ Visit `http://localhost:4321` to view your site.
 *   **`pnpm test`**: Run test suite
 *   **`pnpm test:watch`**: Run tests in watch mode
 *   **`pnpm test:ui`**: Run tests with UI interface
+*   **`pnpm test:auth`**: Run authentication-specific tests
 *   **`pnpm img-compress`**: Optimize images in public folder
 
 ## Project Structure

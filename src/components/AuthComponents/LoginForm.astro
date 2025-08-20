@@ -1,0 +1,324 @@
+---
+import { FeatureFlags } from '@lib/feature-flags';
+import { Icon } from 'astro-icon/components';
+import LoadingSpinner from '@components/ui/LoadingSpinner.astro';
+import SocialAuth from './SocialAuth.astro';
+
+// Only render if auth is enabled
+if (!FeatureFlags.AUTH_ENABLED) {
+  return null;
+}
+
+interface Props {
+  redirectTo?: string;
+  class?: string;
+}
+
+const { redirectTo = '/', class: className } = Astro.props;
+---
+
+{FeatureFlags.AUTH_ENABLED && (
+  <div class:list={["login-form-container", className]}>
+    <form id="login-form" class="space-y-6" novalidate>
+      <!-- Email Field -->
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Email Address
+        </label>
+        <div class="relative">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            autocomplete="email"
+            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg outline-none transition-colors focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 dark:focus:ring-indigo-900/20"
+            placeholder="Enter your email"
+            aria-describedby="email-error"
+          />
+          <Icon name="bx:envelope" class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        </div>
+        <div id="email-error" class="error-message text-red-500 text-sm mt-1 hidden" role="alert"></div>
+      </div>
+
+      <!-- Password Field -->
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Password
+        </label>
+        <div class="relative">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            autocomplete="current-password"
+            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg outline-none transition-colors focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:focus:border-indigo-400 dark:focus:ring-indigo-900/20"
+            placeholder="Enter your password"
+            aria-describedby="password-error"
+          />
+          <button
+            type="button"
+            id="toggle-password"
+            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            aria-label="Toggle password visibility"
+          >
+            <Icon name="bx:eye" class="w-5 h-5" id="eye-open" />
+            <Icon name="bx:eye-slash" class="w-5 h-5 hidden" id="eye-closed" />
+          </button>
+        </div>
+        <div id="password-error" class="error-message text-red-500 text-sm mt-1 hidden" role="alert"></div>
+      </div>
+
+      <!-- Remember Me and Forgot Password -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <input
+            id="remember-me"
+            name="remember-me"
+            type="checkbox"
+            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+          />
+          <label for="remember-me" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+            Remember me
+          </label>
+        </div>
+        <div class="text-sm">
+          <a
+            href="/auth/forgot-password"
+            class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
+          >
+            Forgot your password?
+          </a>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        id="login-submit"
+        class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        aria-describedby="form-error"
+      >
+        <span id="login-text">Sign in</span>
+        <LoadingSpinner size="sm" class="ml-2 hidden" id="login-spinner" />
+      </button>
+
+      <!-- Form Error Message -->
+      <div id="form-error" class="error-message text-red-500 text-sm text-center hidden" role="alert"></div>
+      
+      <!-- Success Message -->
+      <div id="form-success" class="text-green-500 text-sm text-center hidden" role="alert"></div>
+    </form>
+
+    <!-- Social Authentication -->
+    <div class="mt-6">
+      <div class="relative">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+          <span class="px-2 bg-white dark:bg-gray-900 text-gray-500">Or continue with</span>
+        </div>
+      </div>
+      <SocialAuth redirectTo={redirectTo} />
+    </div>
+
+    <!-- Sign Up Link -->
+    <div class="mt-6 text-center">
+      <p class="text-sm text-gray-600 dark:text-gray-400">
+        Don't have an account?
+        <a
+          href="/auth/register"
+          class="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
+        >
+          Sign up
+        </a>
+      </p>
+    </div>
+  </div>
+)}
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('login-form') as HTMLFormElement;
+    const submitButton = document.getElementById('login-submit') as HTMLButtonElement;
+    const loginText = document.getElementById('login-text') as HTMLSpanElement;
+    const loginSpinner = document.getElementById('login-spinner') as HTMLElement;
+    const togglePasswordButton = document.getElementById('toggle-password') as HTMLButtonElement;
+    const passwordInput = document.getElementById('password') as HTMLInputElement;
+    const eyeOpen = document.getElementById('eye-open') as HTMLElement;
+    const eyeClosed = document.getElementById('eye-closed') as HTMLElement;
+
+    if (!form) return;
+
+    // Password visibility toggle
+    togglePasswordButton?.addEventListener('click', () => {
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      eyeOpen.classList.toggle('hidden', isPassword);
+      eyeClosed.classList.toggle('hidden', !isPassword);
+    });
+
+    // Real-time validation
+    const emailInput = document.getElementById('email') as HTMLInputElement;
+    const validateEmail = (email: string): boolean => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    };
+
+    const showError = (fieldId: string, message: string) => {
+      const field = document.getElementById(fieldId) as HTMLInputElement;
+      const errorElement = document.getElementById(`${fieldId}-error`) as HTMLElement;
+      
+      field.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-100');
+      field.classList.remove('border-gray-300', 'focus:border-indigo-500', 'focus:ring-indigo-100');
+      errorElement.textContent = message;
+      errorElement.classList.remove('hidden');
+    };
+
+    const clearError = (fieldId: string) => {
+      const field = document.getElementById(fieldId) as HTMLInputElement;
+      const errorElement = document.getElementById(`${fieldId}-error`) as HTMLElement;
+      
+      field.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-100');
+      field.classList.add('border-gray-300', 'focus:border-indigo-500', 'focus:ring-indigo-100');
+      errorElement.classList.add('hidden');
+    };
+
+    const showFormError = (message: string) => {
+      const errorElement = document.getElementById('form-error') as HTMLElement;
+      errorElement.textContent = message;
+      errorElement.classList.remove('hidden');
+    };
+
+    const clearFormMessages = () => {
+      const errorElement = document.getElementById('form-error') as HTMLElement;
+      const successElement = document.getElementById('form-success') as HTMLElement;
+      errorElement.classList.add('hidden');
+      successElement.classList.add('hidden');
+    };
+
+    // Field validation on blur
+    emailInput?.addEventListener('blur', () => {
+      const email = emailInput.value.trim();
+      if (email && !validateEmail(email)) {
+        showError('email', 'Please enter a valid email address');
+      } else {
+        clearError('email');
+      }
+    });
+
+    passwordInput?.addEventListener('blur', () => {
+      const password = passwordInput.value;
+      if (password && password.length < 1) {
+        showError('password', 'Password is required');
+      } else {
+        clearError('password');
+      }
+    });
+
+    // Form submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearFormMessages();
+
+      const formData = new FormData(form);
+      const email = formData.get('email') as string;
+      const password = formData.get('password') as string;
+
+      // Validate form
+      let isValid = true;
+
+      if (!email || !email.trim()) {
+        showError('email', 'Email is required');
+        isValid = false;
+      } else if (!validateEmail(email)) {
+        showError('email', 'Please enter a valid email address');
+        isValid = false;
+      } else {
+        clearError('email');
+      }
+
+      if (!password) {
+        showError('password', 'Password is required');
+        isValid = false;
+      } else {
+        clearError('password');
+      }
+
+      if (!isValid) {
+        return;
+      }
+
+      // Set loading state
+      submitButton.disabled = true;
+      loginText.textContent = 'Signing in...';
+      loginSpinner.classList.remove('hidden');
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          // Show success message
+          const successElement = document.getElementById('form-success') as HTMLElement;
+          successElement.textContent = 'Login successful! Redirecting...';
+          successElement.classList.remove('hidden');
+
+          // Redirect after a short delay
+          setTimeout(() => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectTo = urlParams.get('redirect') || '${redirectTo}';
+            window.location.href = redirectTo;
+          }, 1000);
+        } else {
+          showFormError(result.error || 'Login failed. Please try again.');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        showFormError('An error occurred. Please try again.');
+      } finally {
+        // Reset loading state
+        submitButton.disabled = false;
+        loginText.textContent = 'Sign in';
+        loginSpinner.classList.add('hidden');
+      }
+    });
+  });
+</script>
+
+<style>
+  .login-form-container {
+    @apply max-w-md mx-auto;
+  }
+
+  /* Focus styles for better accessibility */
+  input:focus {
+    @apply outline-none;
+  }
+
+  /* Error state styles */
+  .error-message {
+    @apply text-sm mt-1;
+  }
+
+  /* Loading state styles */
+  button:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .login-form-container {
+      color-scheme: dark;
+    }
+  }
+</style>

@@ -1,0 +1,108 @@
+---
+import Layout from '@layouts/Layout.astro';
+import Container from '@components/container.astro';
+import Sectionhead from '@components/sectionhead.astro';
+import RegisterForm from '@components/AuthComponents/RegisterForm.astro';
+import { FeatureFlags } from '@lib/feature-flags';
+
+// Redirect if auth is disabled
+if (!FeatureFlags.AUTH_ENABLED) {
+  return Astro.redirect('/404');
+}
+
+// Redirect if already authenticated
+const { isAuthenticated } = Astro.locals;
+if (isAuthenticated) {
+  const redirectTo = Astro.url.searchParams.get('redirect') || '/';
+  return Astro.redirect(redirectTo);
+}
+
+const title = 'Create Account';
+const description = 'Join our community to access personalized features, save your favorite prompts, and discover new AI tools.';
+---
+
+<Layout title={title} description={description}>
+  <Container>
+    <Sectionhead>
+      <Fragment slot="title">{title}</Fragment>
+      <Fragment slot="desc">{description}</Fragment>
+    </Sectionhead>
+
+    <div class="mx-auto max-w-lg">
+      <div class="bg-white dark:bg-gray-900 py-8 px-6 shadow-lg rounded-lg border border-gray-200 dark:border-gray-700">
+        <div class="mb-8">
+          <h2 class="text-center text-3xl font-bold text-gray-900 dark:text-white">
+            Get started today
+          </h2>
+          <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+            Create your account to unlock powerful features
+          </p>
+        </div>
+
+        <RegisterForm />
+      </div>
+
+      <!-- Benefits Section -->
+      <div class="mt-8 bg-gray-50 dark:bg-gray-800/50 rounded-lg p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 text-center">
+          Why create an account?
+        </h3>
+        <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+          <li class="flex items-start">
+            <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+            <span><strong>Save favorites:</strong> Keep track of your most useful prompts and personas</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+            <span><strong>Personalized experience:</strong> Get recommendations based on your interests</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+            <span><strong>Submit content:</strong> Share your own prompts and AI personas with the community</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+            <span><strong>Early access:</strong> Be the first to try new features and tools</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Additional Help -->
+      <div class="mt-8 text-center">
+        <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+          <p>
+            <strong>Questions?</strong> Check our 
+            <a href="/help" class="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium">
+              FAQ
+            </a> or 
+            <a href="/contact" class="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium">
+              contact support
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </Container>
+</Layout>
+
+<style>
+  /* Custom page styles */
+  .container {
+    @apply pt-12 pb-16;
+  }
+
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    body {
+      color-scheme: dark;
+    }
+  }
+</style>

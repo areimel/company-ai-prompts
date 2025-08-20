@@ -1,0 +1,242 @@
+---
+import { FeatureFlags } from '@lib/feature-flags';
+import { Icon } from 'astro-icon/components';
+import LoadingSpinner from '@components/ui/LoadingSpinner.astro';
+
+// Only render if auth and social auth are enabled
+if (!FeatureFlags.AUTH_ENABLED || !FeatureFlags.SOCIAL_AUTH_ENABLED) {
+  return null;
+}
+
+interface Props {
+  redirectTo?: string;
+  class?: string;
+}
+
+const { redirectTo = '/', class: className } = Astro.props;
+---
+
+{(FeatureFlags.AUTH_ENABLED && FeatureFlags.SOCIAL_AUTH_ENABLED) && (
+  <div class:list={["social-auth-container", className]}>
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <!-- Google Login -->
+      <button
+        type="button"
+        id="google-login"
+        class="social-button group relative w-full flex justify-center items-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+        aria-describedby="google-error"
+      >
+        <Icon name="simple-icons:google" class="w-5 h-5 mr-2 text-red-500" />
+        <span class="google-text">Google</span>
+        <LoadingSpinner size="sm" class="ml-2 hidden google-spinner" />
+      </button>
+
+      <!-- GitHub Login -->
+      <button
+        type="button"
+        id="github-login"
+        class="social-button group relative w-full flex justify-center items-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+        aria-describedby="github-error"
+      >
+        <Icon name="simple-icons:github" class="w-5 h-5 mr-2 text-gray-900 dark:text-white" />
+        <span class="github-text">GitHub</span>
+        <LoadingSpinner size="sm" class="ml-2 hidden github-spinner" />
+      </button>
+    </div>
+
+    <!-- Error Messages -->
+    <div id="google-error" class="error-message text-red-500 text-sm text-center mt-2 hidden" role="alert"></div>
+    <div id="github-error" class="error-message text-red-500 text-sm text-center mt-2 hidden" role="alert"></div>
+    <div id="social-error" class="error-message text-red-500 text-sm text-center mt-2 hidden" role="alert"></div>
+
+    <!-- Success Message -->
+    <div id="social-success" class="text-green-500 text-sm text-center mt-2 hidden" role="alert"></div>
+  </div>
+)}
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const googleButton = document.getElementById('google-login') as HTMLButtonElement;
+    const githubButton = document.getElementById('github-login') as HTMLButtonElement;
+
+    if (!googleButton || !githubButton) return;
+
+    const setLoadingState = (provider: 'google' | 'github', loading: boolean) => {
+      const button = provider === 'google' ? googleButton : githubButton;
+      const text = button.querySelector(`.${provider}-text`) as HTMLElement;
+      const spinner = button.querySelector(`.${provider}-spinner`) as HTMLElement;
+
+      button.disabled = loading;
+      if (loading) {
+        text.textContent = provider === 'google' ? 'Connecting...' : 'Connecting...';
+        spinner.classList.remove('hidden');
+      } else {
+        text.textContent = provider === 'google' ? 'Google' : 'GitHub';
+        spinner.classList.add('hidden');
+      }
+    };
+
+    const showError = (provider: 'google' | 'github' | 'social', message: string) => {
+      const errorElement = document.getElementById(`${provider}-error`) as HTMLElement;
+      errorElement.textContent = message;
+      errorElement.classList.remove('hidden');
+      
+      // Hide after 5 seconds
+      setTimeout(() => {
+        errorElement.classList.add('hidden');
+      }, 5000);
+    };
+
+    const showSuccess = (message: string) => {
+      const successElement = document.getElementById('social-success') as HTMLElement;
+      successElement.textContent = message;
+      successElement.classList.remove('hidden');
+    };
+
+    const clearMessages = () => {
+      const errorElements = ['google-error', 'github-error', 'social-error'].map(id => 
+        document.getElementById(id) as HTMLElement
+      );
+      const successElement = document.getElementById('social-success') as HTMLElement;
+      
+      errorElements.forEach(el => el.classList.add('hidden'));
+      successElement.classList.add('hidden');
+    };
+
+    const handleSocialLogin = async (provider: 'google' | 'github') => {
+      clearMessages();
+      setLoadingState(provider, true);
+
+      try {
+        // Get current URL params to preserve redirect
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentRedirect = urlParams.get('redirect') || '${redirectTo}';
+        
+        // Build redirect URL for OAuth callback
+        const redirectUrl = `${window.location.origin}/api/auth/callback?redirect=${encodeURIComponent(currentRedirect)}`;
+
+        const response = await fetch('/api/auth/social-login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            provider,
+            redirectTo: redirectUrl
+          }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          if (result.url) {
+            // OAuth redirect URL provided - redirect user
+            showSuccess(`Redirecting to ${provider}...`);
+            window.location.href = result.url;
+          } else {
+            // Direct success (shouldn't happen with OAuth but handle it)
+            showSuccess('Login successful! Redirecting...');
+            setTimeout(() => {
+              window.location.href = currentRedirect;
+            }, 1000);
+          }
+        } else {
+          showError(provider, result.error || `${provider} login failed. Please try again.`);
+          setLoadingState(provider, false);
+        }
+      } catch (error) {
+        console.error(`${provider} login error:`, error);
+        showError(provider, 'An error occurred. Please try again.');
+        setLoadingState(provider, false);
+      }
+    };
+
+    // Event listeners
+    googleButton.addEventListener('click', () => handleSocialLogin('google'));
+    githubButton.addEventListener('click', () => handleSocialLogin('github'));
+
+    // Handle OAuth callback errors from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    const errorDescription = urlParams.get('error_description');
+
+    if (error) {
+      let errorMessage = 'Authentication failed.';
+      
+      switch (error) {
+        case 'access_denied':
+          errorMessage = 'Access was denied. Please try again.';
+          break;
+        case 'invalid_request':
+          errorMessage = 'Invalid request. Please try again.';
+          break;
+        case 'server_error':
+          errorMessage = 'Server error occurred. Please try again later.';
+          break;
+        default:
+          errorMessage = errorDescription || 'Authentication failed. Please try again.';
+      }
+      
+      showError('social', errorMessage);
+      
+      // Clean up URL
+      const cleanUrl = window.location.pathname + (window.location.search.replace(/[?&](error|error_description)=[^&]*/g, '').replace(/^&/, '?') || '');
+      window.history.replaceState({}, '', cleanUrl);
+    }
+  });
+</script>
+
+<style>
+  .social-auth-container {
+    @apply w-full;
+  }
+
+  .social-button {
+    @apply transition-transform duration-150 active:scale-95;
+  }
+
+  .social-button:hover {
+    @apply transform translate-y-[-1px] shadow-md;
+  }
+
+  .social-button:disabled {
+    @apply transform-none shadow-sm;
+  }
+
+  /* Icon hover effects */
+  .social-button:hover .text-red-500 {
+    @apply text-red-600;
+  }
+
+  .social-button:hover .text-gray-900 {
+    @apply text-black;
+  }
+
+  .social-button:hover .dark\:text-white {
+    @apply dark:text-gray-100;
+  }
+
+  /* Error message styles */
+  .error-message {
+    @apply text-sm;
+  }
+
+  /* Loading state styles */
+  button:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .social-auth-container {
+      color-scheme: dark;
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .social-auth-container .grid-cols-2 {
+      @apply grid-cols-1;
+    }
+  }
+</style>
