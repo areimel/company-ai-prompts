@@ -1,9 +1,9 @@
 import type { APIRoute } from 'astro';
-import { AuthService } from '../../../lib/auth-service.js';
+import { createServerSupabaseClient, isAuthEnabled } from '../../../lib/supabase-ssr.js';
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   // Check if authentication is enabled
-  if (!AuthService.isEnabled()) {
+  if (!isAuthEnabled()) {
     return new Response(
       JSON.stringify({ 
         success: false, 
@@ -17,6 +17,9 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   try {
+    // Create server-side Supabase client
+    const supabase = createServerSupabaseClient({ request, cookies });
+    
     // Parse request body
     const body = await request.json();
     const { email, password } = body;
@@ -50,14 +53,17 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    // Attempt login
-    const result = await AuthService.login({ email, password });
+    // Attempt login using Supabase
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-    if (!result.success) {
+    if (error) {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: result.error 
+          error: error.message 
         }),
         { 
           status: 401,
@@ -71,9 +77,9 @@ export const POST: APIRoute = async ({ request }) => {
       JSON.stringify({ 
         success: true, 
         user: {
-          id: result.user?.id,
-          email: result.user?.email,
-          created_at: result.user?.created_at,
+          id: data.user?.id,
+          email: data.user?.email,
+          created_at: data.user?.created_at,
         }
       }),
       { 

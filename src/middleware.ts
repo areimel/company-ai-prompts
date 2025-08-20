@@ -1,5 +1,5 @@
 import { defineMiddleware } from "astro:middleware";
-import { supabase, isAuthEnabled } from "./lib/supabase.js";
+import { createServerSupabaseClient, isAuthEnabled } from "./lib/supabase-ssr.js";
 
 // Define protected routes that require authentication
 const PROTECTED_ROUTES = [
@@ -18,10 +18,14 @@ const AUTH_ROUTES = [
 ];
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  const { url, locals, redirect } = context;
+  const { url, locals, redirect, cookies, request } = context;
   
   // Skip auth middleware if authentication is disabled
   if (!isAuthEnabled()) {
+    // Clear any auth state when disabled
+    locals.session = null;
+    locals.user = null;
+    locals.isAuthenticated = false;
     return next();
   }
 
@@ -29,17 +33,23 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const pathname = url.pathname;
   
   try {
-    // Get session from Supabase
-    const { data: { session }, error } = await supabase.auth.getSession();
+    // Create server-side Supabase client with cookie management
+    const supabase = createServerSupabaseClient({ request, cookies });
+    
+    // Use getUser() for secure server-side authentication (not getSession())
+    const { data: { user }, error } = await supabase.auth.getUser();
     
     if (error) {
       console.error('Middleware auth error:', error);
     }
 
     // Add auth state to locals for use in pages/components
+    locals.user = user;
+    locals.isAuthenticated = !!user;
+    
+    // Get session data for additional info (but don't rely on it for auth)
+    const { data: { session } } = await supabase.auth.getSession();
     locals.session = session;
-    locals.user = session?.user || null;
-    locals.isAuthenticated = !!session?.user;
 
     // Check if current route is protected
     const isProtectedRoute = PROTECTED_ROUTES.some(route => 

@@ -1,22 +1,31 @@
+// Re-export SSR utilities and client creation functions
+export { 
+  createServerSupabaseClient, 
+  createBrowserSupabaseClient, 
+  isAuthEnabled,
+  type UserProfile,
+  type UserFavorite 
+} from './supabase-ssr.js';
+
+// Legacy compatibility - create a basic client for non-SSR operations
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase client configuration
-const supabaseUrl = import.meta.env.SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL || import.meta.env.SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || import.meta.env.SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables. Please check your .env file.');
+  console.warn('Missing Supabase environment variables. Please check your .env file.');
 }
 
-// Create Supabase client with PKCE authentication flow
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+// Legacy client for backward compatibility (use SSR clients in production)
+export const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
     flowType: 'pkce',
   },
-});
+}) : null;
 
 // Types for our database schema
 export interface UserProfile {

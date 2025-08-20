@@ -1,4 +1,4 @@
-import { supabase, isAuthEnabled, type UserProfile } from './supabase.js';
+import { createBrowserSupabaseClient, isAuthEnabled, type UserProfile } from './supabase-ssr.js';
 import type { User, Session, AuthError } from '@supabase/supabase-js';
 
 // Authentication result types
@@ -45,6 +45,8 @@ export class AuthService {
     }
 
     try {
+      const supabase = createBrowserSupabaseClient();
+      
       const { data, error } = await supabase.auth.signUp({
         email: credentials.email,
         password: credentials.password,
@@ -81,6 +83,11 @@ export class AuthService {
     }
 
     try {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        return { success: false, error: 'Failed to initialize authentication client' };
+      }
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email: credentials.email,
         password: credentials.password,
@@ -112,6 +119,11 @@ export class AuthService {
     }
 
     try {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        return { success: false, error: 'Failed to initialize authentication client' };
+      }
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
@@ -142,6 +154,11 @@ export class AuthService {
     }
 
     try {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        return { success: false, error: 'Failed to initialize authentication client' };
+      }
+      
       const { error } = await supabase.auth.signOut();
 
       if (error) {
@@ -166,6 +183,11 @@ export class AuthService {
     }
 
     try {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        return null;
+      }
+      
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error) throw error;
       return session;
@@ -184,6 +206,11 @@ export class AuthService {
     }
 
     try {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        return null;
+      }
+      
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error) throw error;
       return user;
@@ -202,6 +229,11 @@ export class AuthService {
     }
 
     try {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        return null;
+      }
+      
       // If no userId provided, get current user's profile
       if (!userId) {
         const user = await this.getCurrentUser();
@@ -232,6 +264,11 @@ export class AuthService {
     }
 
     try {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        return { success: false, error: 'Failed to initialize authentication client' };
+      }
+      
       const user = await this.getCurrentUser();
       if (!user) {
         return { success: false, error: 'No authenticated user found' };
@@ -266,6 +303,11 @@ export class AuthService {
     }
 
     try {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        return { success: false, error: 'Failed to initialize authentication client' };
+      }
+      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/reset-password`,
       });
@@ -292,6 +334,11 @@ export class AuthService {
     }
 
     try {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        return { success: false, error: 'Failed to initialize authentication client' };
+      }
+      
       const { data, error } = await supabase.auth.updateUser({
         password: newPassword,
       });
@@ -317,6 +364,12 @@ export class AuthService {
       return { data: { subscription: { unsubscribe: () => {} } } };
     }
 
-    return supabase.auth.onAuthStateChange(callback);
+    try {
+      const supabase = createBrowserSupabaseClient();
+      return supabase.auth.onAuthStateChange(callback);
+    } catch (error) {
+      console.error('Error setting up auth state change listener:', error);
+      return { data: { subscription: { unsubscribe: () => {} } } };
+    }
   }
 }

@@ -1,9 +1,9 @@
 import type { APIRoute } from 'astro';
-import { AuthService } from '../../../lib/auth-service.js';
+import { createServerSupabaseClient, isAuthEnabled } from '../../../lib/supabase-ssr.js';
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   // Check if authentication is enabled
-  if (!AuthService.isEnabled()) {
+  if (!isAuthEnabled()) {
     return new Response(
       JSON.stringify({ 
         success: false, 
@@ -92,18 +92,25 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
+    // Create Supabase client with cookie management
+    const supabase = createServerSupabaseClient({ request, cookies });
+
     // Attempt registration
-    const result = await AuthService.register({ 
-      email, 
-      password, 
-      fullName: fullName || undefined 
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName || '',
+        },
+      },
     });
 
-    if (!result.success) {
+    if (error) {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: result.error 
+          error: error.message 
         }),
         { 
           status: 400,
@@ -118,9 +125,9 @@ export const POST: APIRoute = async ({ request }) => {
         success: true,
         message: 'Registration successful. Please check your email to verify your account.',
         user: {
-          id: result.user?.id,
-          email: result.user?.email,
-          created_at: result.user?.created_at,
+          id: data.user?.id,
+          email: data.user?.email,
+          created_at: data.user?.created_at,
         }
       }),
       { 

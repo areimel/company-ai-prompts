@@ -12,7 +12,16 @@
       "Bash(pnpm build:*)",
       "Bash(npx astro:*)",
       "WebSearch",
-      "WebFetch(domain:docs.astro.build)"
+      "WebFetch(domain:docs.astro.build)",
+      "Bash(pnpm dev:*)",
+      "WebFetch(domain:supabase.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(node:*)",
+      "Bash(npx tsc:*)",
+      "Bash(timeout 120 pnpm build)",
+      "Bash(timeout 15 pnpm dev)"
     ],
     "deny": []
   }

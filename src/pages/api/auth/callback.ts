@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
-import { supabase, isAuthEnabled } from '../../../lib/supabase.js';
+import { createServerSupabaseClient, isAuthEnabled } from '../../../lib/supabase-ssr.js';
 
-export const GET: APIRoute = async ({ url, redirect }) => {
+export const GET: APIRoute = async ({ url, redirect, cookies, request }) => {
   // Check if authentication is enabled
   if (!isAuthEnabled()) {
     return redirect('/login?error=auth_disabled');
@@ -25,6 +25,9 @@ export const GET: APIRoute = async ({ url, redirect }) => {
     if (!code) {
       return redirect('/login?error=missing_auth_code');
     }
+
+    // Create Supabase client with cookie management
+    const supabase = createServerSupabaseClient({ request, cookies });
 
     // Exchange the auth code for a session
     const { data, error: sessionError } = await supabase.auth.exchangeCodeForSession(code);

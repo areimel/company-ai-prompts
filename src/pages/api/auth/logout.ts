@@ -1,9 +1,9 @@
 import type { APIRoute } from 'astro';
-import { AuthService } from '../../../lib/auth-service.js';
+import { createServerSupabaseClient, isAuthEnabled } from '../../../lib/supabase-ssr.js';
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   // Check if authentication is enabled
-  if (!AuthService.isEnabled()) {
+  if (!isAuthEnabled()) {
     return new Response(
       JSON.stringify({ 
         success: false, 
@@ -17,14 +17,17 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   try {
-    // Attempt logout
-    const result = await AuthService.logout();
+    // Create Supabase client with cookie management
+    const supabase = createServerSupabaseClient({ request, cookies });
 
-    if (!result.success) {
+    // Attempt logout
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: result.error 
+          error: error.message 
         }),
         { 
           status: 400,

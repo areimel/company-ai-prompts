@@ -1,5 +1,4 @@
-import { supabase, isAuthEnabled, type UserFavorite } from './supabase.js';
-import { AuthService } from './auth-service.js';
+import { createBrowserSupabaseClient, isAuthEnabled, type UserFavorite } from './supabase-ssr.js';
 
 // Favorites service result types
 export interface FavoritesResult {
@@ -48,8 +47,13 @@ export class FavoritesService {
     }
 
     try {
-      const user = await AuthService.getCurrentUser();
-      if (!user) {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        return { success: false, error: 'Failed to initialize database client' };
+      }
+      
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
         return { success: false, error: 'User must be authenticated to add favorites' };
       }
 
@@ -85,8 +89,13 @@ export class FavoritesService {
     }
 
     try {
-      const user = await AuthService.getCurrentUser();
-      if (!user) {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        return { success: false, error: 'Failed to initialize database client' };
+      }
+      
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
         return { success: false, error: 'User must be authenticated to remove favorites' };
       }
 
@@ -121,8 +130,13 @@ export class FavoritesService {
     }
 
     try {
-      const user = await AuthService.getCurrentUser();
-      if (!user) {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        return false;
+      }
+      
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
         return false;
       }
 
@@ -157,8 +171,13 @@ export class FavoritesService {
     }
 
     try {
-      const user = await AuthService.getCurrentUser();
-      if (!user) {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        return { items: [], total: 0, hasMore: false };
+      }
+      
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
         return { items: [], total: 0, hasMore: false };
       }
 
@@ -235,8 +254,13 @@ export class FavoritesService {
     }
 
     try {
-      const user = await AuthService.getCurrentUser();
-      if (!user) {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        return 0;
+      }
+      
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
         return 0;
       }
 
@@ -274,8 +298,13 @@ export class FavoritesService {
     }
 
     try {
-      const user = await AuthService.getCurrentUser();
-      if (!user) {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        return {};
+      }
+      
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
         return {};
       }
 
@@ -326,8 +355,13 @@ export class FavoritesService {
     }
 
     try {
-      const user = await AuthService.getCurrentUser();
-      if (!user) {
+      const supabase = createBrowserSupabaseClient();
+      if (!supabase) {
+        return { success: false, error: 'Failed to initialize database client' };
+      }
+      
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
         return { success: false, error: 'User must be authenticated to export favorites' };
       }
 
